@@ -26,6 +26,5 @@ func getQuestion(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	io.WriteString(w, string(responseBody))
 }

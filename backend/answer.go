@@ -39,6 +39,5 @@ func postAnswer(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	io.WriteString(w, string(responseBody))
 }
