@@ -8,14 +8,21 @@ import (
 )
 
 type QuestionResponse = struct {
-	Question string   `json:"question"`
-	Inputs   []string `json:"inputs"`
+	Question    string   `json:"question"`
+	Inputs      []string `json:"inputs"`
+	SampleInput string   `json:"sampleInput"`
+	Solution    string   `json:"solution"`
+	Explanation string   `json:"explanation"`
 }
 
 func getQuestion(w http.ResponseWriter, r *http.Request) {
-	var question QuestionResponse
-	question.Question = "what is the smallest element in this array"
-	question.Inputs = []string{"[1], [1, 2]"}
+	question := QuestionResponse{
+		Question:    "what is the smallest element in this array",
+		Inputs:      []string{"[1], [1,2]"},
+		Solution:    "this is a solution",
+		SampleInput: "[3,2,1]",
+		Explanation: "this is an explanation"}
+
 	responseBody, err := json.Marshal(question)
 	if err != nil {
 		panic(err)
