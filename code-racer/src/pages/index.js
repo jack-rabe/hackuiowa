@@ -14,7 +14,9 @@ export default function Home() {
 
   const [userOutputs, setUserOutputs] = useState([]);
   const [testInputs, setTestInputs] = useState([]);
-  const [solutions, setSolutions] = useState([]);
+  const [missedQuestions, setMissedQuestions] = useState([]);
+
+  // TODO may want to enable 'light mode' vs 'dark mode'
 
   useEffect(() => {
     fetch("http://localhost:3333/question")
@@ -34,52 +36,54 @@ export default function Home() {
           explanation: x.explanation,
         });
 
-        // TODO make sure we're correctly using this later
         setTestInputs(x.inputs);
       });
 
     // TODO don't hard-code the body we send to the BE
     const cur_body = {
       userId: "dconway",
-      responses: [2, 3, 0],
+      responses: ["2", "3"],
     };
 
-    // fetch("http://localhost:3333/answer", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //   },
-    //   body: JSON.stringify(cur_body),
-    // })
-    //   .then((res) => {
-    //     if (res.status != 200) {
-    //       console.log("Backend is currently down");
-    //       return;
-    //     } else {
-    //       return res.json();
-    //     }
-    //   })
-    //   .then((x) => {
-    //     console.log(x);
-    //   });
+    // TODO replace this with the actual code results the user has
+    setUserOutputs(["1", "2"]);
 
-    setTestOutput([
-      {
-        case: "x=[1, 3, 4]",
-        correct: true,
-        userOutput: 2,
-      },
-      {
-        case: "x=[12, 3, 5, 1, 8, 9, 7, 6, 10, 11, 2]",
-        correct: false,
-        userOutput: 5,
-      },
-      {
-        case: "x=[3, 4, 5, 2]",
-        correct: false,
-        userOutput: 2,
-      },
-    ]);
+    fetch("http://localhost:3333/answer", {
+      method: "POST",
+      body: JSON.stringify(cur_body),
+    })
+      .then((res) => {
+        if (res.status != 200) {
+          console.log("Backend is currently down");
+          return;
+        } else {
+          return res.json();
+        }
+      })
+      .then((x) => {
+        if (x.hasWon) {
+          alert("Congratulations! You solved the problem!");
+        }
+        setMissedQuestions(x.missedQuestions);
+      });
+
+    // setTestOutput([
+    //   {
+    //     case: "x=[1, 3, 4]",
+    //     correct: true,
+    //     userOutput: 2,
+    //   },
+    //   {
+    //     case: "x=[12, 3, 5, 1, 8, 9, 7, 6, 10, 11, 2]",
+    //     correct: false,
+    //     userOutput: 5,
+    //   },
+    //   {
+    //     case: "x=[3, 4, 5, 2]",
+    //     correct: false,
+    //     userOutput: 2,
+    //   },
+    // ]);
   }, []);
 
   return (
@@ -107,7 +111,13 @@ export default function Home() {
           </button>
           <br />
           <br />
-          {testCasesVisible && <TestOutput tests={testOutput} />}
+          {testCasesVisible && (
+            <TestOutput
+              userOutputs={userOutputs}
+              testInputs={testInputs}
+              missedQuestions={missedQuestions}
+            />
+          )}
         </div>
       </div>
     </>
