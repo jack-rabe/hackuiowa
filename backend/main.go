@@ -14,8 +14,7 @@ type Player struct {
 	Conn       *websocket.Conn
 }
 
-var playersMap map[int]Player
-var tmpPlayerNum *int
+var playersMap map[string]Player
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
@@ -26,25 +25,29 @@ var upgrader = websocket.Upgrader{
 }
 
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
-	*tmpPlayerNum++
-	playerNum := *tmpPlayerNum
 	conn, err := upgrader.Upgrade(w, r, nil)
-	playersMap[playerNum] = Player{ID: "jack", NumCorrect: 3, Conn: conn}
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	defer conn.Close()
-	defer delete(playersMap, playerNum)
+
+	_, msg, err := conn.ReadMessage()
+	// read in username
+	userId := string(msg)
+	fmt.Println(msg)
+	playersMap[userId] = Player{ID: userId, NumCorrect: 3, Conn: conn}
+	defer delete(playersMap, userId)
 
 	for {
-		_, requestBody, err := conn.ReadMessage()
+		// TODO don't want to read messages, only write them
+		_, connBody, err := conn.ReadMessage()
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 		for _, player := range playersMap {
-			if err := player.Conn.WriteMessage(websocket.TextMessage, requestBody); err != nil {
+			if err := player.Conn.WriteMessage(websocket.TextMessage, connBody); err != nil {
 				fmt.Println(err)
 				return
 			}
@@ -53,12 +56,12 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	tmpPlayerNum = new(int)
-	playersMap = make(map[int]Player)
+	playersMap = make(map[string]Player)
 
 	router := mux.NewRouter()
 	router.HandleFunc("/answer", postAnswer)
 	router.HandleFunc("/question", getQuestion)
+	router.HandleFunc("/createUser", createUser)
 	router.HandleFunc("/ws", handleWebSocket)
 	http.Handle("/", router)
 
