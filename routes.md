@@ -23,7 +23,7 @@ are we rate-limiting????
 ``` POST /answer ```
 - request body
 {
-    "user_id": "dconway",
+    "userId": "dconway",
     responses: [ 2, 3, 0 ]
 }
 - response body
