@@ -1,5 +1,5 @@
 ## Questions
-are we rate-limiting????
+TODO are we rate-limiting???? (should we be using cookies)
 
 ## API Routes
 ``` WS /game ```
