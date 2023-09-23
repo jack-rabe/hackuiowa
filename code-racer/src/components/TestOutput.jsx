@@ -1,11 +1,10 @@
 import React from "react";
 
 // TODO make sure to remove all TODO statements
-// TODO test how resizable this is
 
 function TestOutput(props) {
   if (props.tests.length == 0) {
-    return <></>;
+    return <div>No test cases provided.</div>;
   }
   return (
     <>

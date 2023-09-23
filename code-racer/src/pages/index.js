@@ -6,19 +6,63 @@ import TestCases from "@/components/TestCases";
 import TestOutput from "@/components/TestOutput";
 
 export default function Home() {
-  const [testCases, setTestCases] = useState([]);
+  const [testCases, setTestCases] = useState({});
   const [problem, setProblem] = useState("");
   const [testOutput, setTestOutput] = useState([]);
+  const [testCasesVisible, setTestCasesVisible] = useState(false);
+  const [userCode, setUserCode] = useState("function solution(x) {\n\n}");
+
+  const [userOutputs, setUserOutputs] = useState([]);
+  const [testInputs, setTestInputs] = useState([]);
+  const [solutions, setSolutions] = useState([]);
 
   useEffect(() => {
-    setTestCases([
-      "x=[3, 1, 4] \n Answer: 2 \n Explanation: 2 is missing from this array, this array otherwise contains the numbers 1 through 4",
-      "x=[2, 5, 3, 1, 8, 9, 7, 6] \n Answer: 4 \n Explanation: 4 because this array contains 1 through 9 but not 4",
-      "x=[1, 2, 3, 4] \n Answer: 5 \n Explanation: 5 because this array contains 1 through 5 except for 5",
-    ]);
-    setProblem(
-      "Given an array x containing 1, ..., n but missing 1, find which integer is missing"
-    );
+    fetch("http://localhost:3333/question")
+      .then((res) => {
+        if (res.status != 200) {
+          console.log("Backend is currently down");
+          return;
+        } else {
+          return res.json();
+        }
+      })
+      .then((x) => {
+        setProblem(x.question);
+        setTestCases({
+          input: x.sampleInput,
+          solution: x.solution,
+          explanation: x.explanation,
+        });
+
+        // TODO make sure we're correctly using this later
+        setTestInputs(x.inputs);
+      });
+
+    // TODO don't hard-code the body we send to the BE
+    const cur_body = {
+      userId: "dconway",
+      responses: [2, 3, 0],
+    };
+
+    // fetch("http://localhost:3333/answer", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //   },
+    //   body: JSON.stringify(cur_body),
+    // })
+    //   .then((res) => {
+    //     if (res.status != 200) {
+    //       console.log("Backend is currently down");
+    //       return;
+    //     } else {
+    //       return res.json();
+    //     }
+    //   })
+    //   .then((x) => {
+    //     console.log(x);
+    //   });
+
     setTestOutput([
       {
         case: "x=[1, 3, 4]",
@@ -42,23 +86,28 @@ export default function Home() {
     <>
       <h1 className="text-center text-3xl">Code Race</h1>
       <br />
-      <div class="grid grid-cols-2 gap-4">
-        <div class="col-span-1">
+      <div className="grid grid-cols-2 gap-4">
+        <div className="col-span-1">
           <h3 className="text-2xl">Problem</h3>
           <ProblemStatement problem={problem} />
           <br />
-          <h3 className="text-2xl">Test Cases</h3>
+          <h3 className="text-2xl">Sample Test Cases</h3>
           <br />
           <TestCases cases={testCases} />
         </div>
-        <div class="col-span-1">
+        <div className="col-span-1">
           <h3 className="text-2xl">JavaScript Code</h3>
-          <Solution />
+          <Solution userCode={userCode} setUserCode={setUserCode} />
           <br />
-          <button className="btn btn-primary">Submit</button>
+          <button
+            className="btn btn-primary"
+            onClick={() => setTestCasesVisible(true)}
+          >
+            Submit
+          </button>
           <br />
           <br />
-          <TestOutput tests={testOutput} />
+          {testCasesVisible && <TestOutput tests={testOutput} />}
         </div>
       </div>
     </>

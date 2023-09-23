@@ -1,12 +1,13 @@
-export default function Solution() {
+function Solution(props) {
   return (
     <textarea
       id="solution"
-      class="border-2 border-gray-400 rounded-lg"
+      className="border-2 border-gray-400 rounded-lg w-5/6"
       rows="9"
-      cols="70"
-      defaultValue="function solution(x) {
-      }"
+      value={props.userCode}
+      onChange={(e) => props.setUserCode(e.value)}
     />
   );
 }
+
+export default Solution;

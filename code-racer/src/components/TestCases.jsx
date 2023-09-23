@@ -1,12 +1,9 @@
 function TestCases(props) {
   return (
     <>
-      {props.cases.map((element, index) => (
-        <>
-          <div key={index}>{element}</div>
-          <br />
-        </>
-      ))}
+      <div>Input: {props.cases.input}</div>
+      <div>Answer: {props.cases.solution}</div>
+      <div>Explanation: {props.cases.explanation}</div>
     </>
   );
 }
