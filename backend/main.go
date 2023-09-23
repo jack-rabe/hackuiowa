@@ -20,10 +20,10 @@ type PostAnswerRequest = struct {
 	Responses []string `json:"responses"`
 }
 
-// type PostAnswerResponse = struct {
-// 	HasWon boolean  `json:"hasWon"`
-// 	Input  []string `json:"input"`
-// }
+type PostAnswerResponse = struct {
+	HasWon          bool  `json:"hasWon"`
+	MissedQuestions []int `json:"missedQuestions"`
+}
 
 func postAnswer(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("got post request\n")
@@ -40,10 +40,15 @@ func postAnswer(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(req)
 
-	fmt.Println(string(requestBody))
-	io.WriteString(w, "This is my website!\n")
+	answerReponse := PostAnswerResponse{HasWon: false, MissedQuestions: []int{1, 2}}
+	responseBody, err := json.Marshal(answerReponse)
+	if err != nil {
+		panic(err)
+	}
+
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	io.WriteString(w, string(responseBody))
 }
 
 func getQuestion(w http.ResponseWriter, r *http.Request) {
