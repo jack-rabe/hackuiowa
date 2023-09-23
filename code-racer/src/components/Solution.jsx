@@ -3,11 +3,10 @@ export default function Solution() {
     <textarea
       id="solution"
       class="border-2 border-gray-400 rounded-lg"
-      rows="4"
-      cols="50"
+      rows="9"
+      cols="70"
       defaultValue="function solution(x) {
-                
-              }"
+      }"
     />
   );
 }
