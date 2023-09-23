@@ -1,75 +1,17 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"io"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
-type QuestionResponse = struct {
-	Question    string   `json:"question"`
-	Inputs      []string `json:"inputs"`
-	SampleInput string   `json:"sampleInput"`
-	Solution    string   `json:"solution"`
-	Explanation string   `json:"explanation"`
-}
-
-type PostAnswerRequest = struct {
-	UserID    string   `json:"userId"`
-	Responses []string `json:"responses"`
-}
-
-type PostAnswerResponse = struct {
-	HasWon          bool  `json:"hasWon"`
-	MissedQuestions []int `json:"missedQuestions"`
-}
-
-func postAnswer(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("got post request\n")
-	requestBody := make([]byte, 1110)
-	num, err := r.Body.Read(requestBody)
-	requestBody = requestBody[:num]
-	if err != nil && err != io.EOF {
-		fmt.Println("err reading request body")
-		panic(err)
-	}
-
-	var req PostAnswerRequest
-	err = json.Unmarshal(requestBody, &req)
-	if err != nil {
-		panic(err)
-	}
-
-	answerReponse := PostAnswerResponse{HasWon: false, MissedQuestions: []int{1, 2}}
-	responseBody, err := json.Marshal(answerReponse)
-	if err != nil {
-		panic(err)
-	}
-
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	io.WriteString(w, string(responseBody))
-}
-
-func getQuestion(w http.ResponseWriter, r *http.Request) {
-	question := QuestionResponse{
-		Question:    "what is the smallest element in this array",
-		Inputs:      []string{"[1], [1,2]"},
-		Solution:    "this is a solution",
-		SampleInput: "[3,2,1]",
-		Explanation: "this is an explanation"}
-
-	responseBody, err := json.Marshal(question)
-	if err != nil {
-		panic(err)
-	}
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	io.WriteString(w, string(responseBody))
-}
-
 func main() {
-	http.HandleFunc("/answer", postAnswer)
-	http.HandleFunc("/question", getQuestion)
+	router := mux.NewRouter()
+	router.HandleFunc("/answer", postAnswer)
+	router.HandleFunc("/question", getQuestion)
+	http.Handle("/", router)
 
 	err := http.ListenAndServe(":3333", nil)
 	if err != nil {
