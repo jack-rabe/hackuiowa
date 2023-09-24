@@ -51,12 +51,6 @@ export default function Game() {
         setTestInputs(x.inputs);
       });
 
-    // TODO don't hard-code the body we send to the BE. need to track the user's userId
-    const cur_body = {
-      userId: "dconway",
-      responses: ["2", "2", "3"],
-    };
-
     // TODO don't hard code this
     setLeaderboard([
       { name: "Joe", progress: 3, time: Date() },
@@ -64,30 +58,6 @@ export default function Game() {
       { name: "Fred", progress: 1, time: Date() },
       { name: "Jimmy", progress: 0, time: Date() },
     ]);
-
-    // TODO replace this with the actual code results the user has
-    setUserOutputs(["1", "2", "3"]);
-
-    fetch("http://localhost:3333/answer", {
-      method: "POST",
-      body: JSON.stringify(cur_body),
-    })
-      .then((res) => {
-        if (res.status != 200) {
-          console.log("Backend is currently down");
-          return;
-        } else {
-          return res.json();
-        }
-      })
-      .then((x) => {
-        // TODO test that this works correctly when we have actually won
-        if (x.hasWon) {
-          alert("Congratulations! You solved the problem!");
-        }
-        console.log(x);
-        setMissedQuestions(x.missedQuestions);
-      });
   }, []);
 
   return (
@@ -111,7 +81,36 @@ export default function Game() {
           <br />
           <button
             className="btn btn-primary font-mono"
-            onClick={() => setTestCasesVisible(true)}
+            onClick={() => {
+              // TODO replace this with the actual code results the user has
+              setUserOutputs(["1", "2", "3"]);
+              // TODO don't hard-code the body we send to the BE. need to track the user's userId
+              const cur_body = {
+                userId: "dconway",
+                responses: ["1", "2", "3"],
+              };
+
+              fetch("http://localhost:3333/answer", {
+                method: "POST",
+                body: JSON.stringify(cur_body),
+              })
+                .then((res) => {
+                  if (res.status != 200) {
+                    console.log("Backend is currently down");
+                    return;
+                  } else {
+                    return res.json();
+                  }
+                })
+                .then((x) => {
+                  // TODO test that this works correctly when we have actually won
+                  if (x.hasWon) {
+                    alert("Congratulations! You solved the problem!");
+                  }
+                  setMissedQuestions(x.missedQuestions);
+                });
+              setTestCasesVisible(true);
+            }}
           >
             Submit
           </button>

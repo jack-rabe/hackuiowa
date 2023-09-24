@@ -5,6 +5,7 @@ import React from "react";
 function TestOutput(props) {
   let allTests = [];
   for (let i = 0; i < props.testInputs.length; i++) {
+    console.log(i)
     allTests.push({
       userOutputs: props.userOutputs[i],
       testInputs: props.testInputs[i],
@@ -18,6 +19,7 @@ function TestOutput(props) {
   return (
     <>
       <div className="text-2xl">Test Cases</div>
+      {console.log(allTests)}
       {allTests.map((element, index) => (
         <div key={index}>
           Case: {element.testInputs}
@@ -25,12 +27,13 @@ function TestOutput(props) {
           User Output: {element.userOutputs}
           <br />
           {element.missedQuestions.toString() === "false"
-            ? "Incorrect"
-            : "Correct"}
+            ? <div className="text-error font-bold">Incorrect</div>
+            : <div className="text-success font-bold">Correct</div>}
+          < br />
           <br />
-          <br />
-        </div>
-      ))}
+        </div >
+      ))
+      }
     </>
   );
 }
