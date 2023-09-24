@@ -1,6 +1,12 @@
 /** @satisfies {import('@webcontainer/api').FileSystemTree} */
 
 export const files = {
+  'userSolution.js': {
+    file: {
+      contents: `
+ `,
+    },
+  },
     'index.js': {
       file: {
         contents: `

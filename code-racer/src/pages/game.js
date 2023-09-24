@@ -33,14 +33,13 @@ export default function Game() {
   const [testInputs, setTestInputs] = useState([]);
   const [missedQuestions, setMissedQuestions] = useState([]);
 
-  const [frameUrl, setframeUrl] = useState("");
-  const [iframeCounter, setIFrameCounter] = useState(0);
+  const [userOutput, setUserOutput] = useState("");
 
 
   // Setting up WebContainer
   useEffect(()=> {
     async function getPackage(){
-      //console.log(files['index.js'].file.contents);
+      console.log(files['userSolution.js'].file.contents);
 
       // Makes sure that webcontainer only boots once
       if (!webcontainerInstance){
@@ -53,89 +52,52 @@ export default function Game() {
         throw new Error('Installation Failed');
       };
 
-      startDevServer();
+      //startDevServer();
+      //runUserCode();
     }
     console.log("Setting up webcontainer");
     getPackage();
   }, []);
 
-   // Function to write to Express' index.js
+   // Function to write to userSolution.js
    function writeContent(content){
 
     /** @param {string} content */
     async function write(content){
-      await webcontainerInstance.fs.writeFile('/index.js', content);
-      const file = await webcontainerInstance.fs.readFile('/index.js', 'utf-8');
-      //await webcontainerInstance.mount(file);
+      await webcontainerInstance.fs.writeFile('/userSolution.js', content);
+      const file = await webcontainerInstance.fs.readFile('/userSolution.js', 'utf-8');
       console.log(file);
     };
     write(content);
   }
 
-  async function startDevServer() {
-    console.log("Starting dev server");
-    // Start Express app
-    await webcontainerInstance.spawn('npm', ['run', 'start']);
-  
-    // Wait for server-ready event
-    webcontainerInstance.on('server-ready', (port, url) => {
-      setframeUrl(url);
-      console.log("Here's the URL");
-      console.log(frameUrl);
-    })
-    console.log("Dev server ready");
-  }
+  async function runUserCode(usrCode){
+    console.log("Running user's solution");
 
-  var code = "import express from 'express'; const app = express(); const port = 3111; app.get('/', (req, res) => {res.send('solution put will go here!!!!!🥳');}); app.listen(port, () => {console.log(\`App is live at http://localhost:\${port}\`);});"
+    // Write user's solution to userSolution.js
+    writeContent(usrCode);
+
+    const runningSolution = await webcontainerInstance.spawn('node', ['userSolution.js']);
+
+    runningSolution.output.pipeTo(new WritableStream({
+      write(data){
+        setUserOutput(data);
+        console.log(data);
+      }
+    }));
+  }
 
   function testUserCode(userCode){
     var usrCode = userCode;
-    usrCode = "import express from 'express';\n    const app = express();\n    const port = 3111;\n    var input2 = [2,5,3,1,8,9,7,6];    var input1 = [2,1,4];\n" + usrCode;
-    usrCode = usrCode + "var output = solution(input1);\n    app.get('/', (req, res) => {res.send([output]);});\n    app.listen(port, () => {});";
+    
+    // Add in test cases and user's solution
+    usrCode = "var input2 = [2,5,3,1,8,9,7,6];    var input1 = [2,1,4];\n" + usrCode;
+
+    // Add in the call to user's solution, and print its output to console
+    usrCode = usrCode + "var output = solution(input1);\n    console.log(output);";
     console.log(usrCode);
-    writeContent(usrCode);
-    setIFrameCounter(iframeCounter + 1);
-    
-    console.log(iframeCounter);
-    console.log("Frame url is below: ");
-    console.log(frameUrl);
-    
-    /*
-    fetch(frameUrl)
-    .then((res) => {
-      if (res.status != 200) {
-        console.log("Express is currently down");
-        return;
-      }
-      return res.json();
-    })
-    .then((x) => {
-      console.log("fetched from express");
-      console.log(frameUrl + "bla");
-      console.log(x);
-    });
-    */
-    
+    runUserCode(usrCode);    
   }
-
-  /*
-  useEffect(()=> {
-    fetch(frameUrl)
-    .then((res) => {
-      if (res.status != 200) {
-        console.log("Express is currently down");
-        return;
-      } else {
-        return res.json();
-      }
-    })
-    .then((x) => {
-      console.log("fetched from express");
-      console.log(x);
-    });
-  }, [])
-*/
-
 
   // TODO may want to enable 'light mode' vs 'dark mode'
 
@@ -217,10 +179,7 @@ export default function Game() {
           >
             Submit
           </button>
-          <iframe
-            key = {iframeCounter}
-            src = {frameUrl}          
-          />
+          <div>{userOutput}</div>
           <br />
           <br />
           {testCasesVisible && (
