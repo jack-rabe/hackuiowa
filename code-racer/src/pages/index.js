@@ -14,11 +14,12 @@ async function checkUsername(router, username) {
   }).then((res) => {
     if (res.status != 201) {
       alert(
-        "That username has already been selected, please choose a different one",
+        "That username has already been selected, please choose a different one"
       );
     } else {
       alert(`Welcome, ${username}!`);
-      router.push("/game");
+      sessionStorage.setItem("username", username);
+      router.push(`/game?username=${username}`);
     }
   });
 }
@@ -27,7 +28,9 @@ export default function Welcome() {
   // TODO check that the length of username is > 0
   // TODO might want to sanitzeHTML(username)
   const [username, setUsername] = useState("");
+
   const router = useRouter();
+
   return (
     <>
       <h1 className="font-mono text-center text-3xl m-3">
@@ -42,8 +45,6 @@ export default function Welcome() {
           className="w-72 h-12 border-2 border-gray-400 rounded-lg pl-4 text-lg focus:outline-none m-1"
           value={username}
           onChange={(e) => {
-            console.log(e);
-            console.log(e.target.value);
             setUsername(e.target.value);
           }}
           onKeyDown={(e) => {

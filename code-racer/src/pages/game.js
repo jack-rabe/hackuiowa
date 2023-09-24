@@ -5,6 +5,7 @@ import ProblemStatement from "@/components/ProblemStatement";
 import TestCases from "@/components/TestCases";
 import TestOutput from "@/components/TestOutput";
 import Leaderboard from "@/components/Leaderboard";
+import { useRouter } from "next/router";
 
 export default function Game() {
   const [testCases, setTestCases] = useState({});
@@ -18,6 +19,10 @@ export default function Game() {
 
   const [leaderboard, setLeaderboard] = useState([]);
 
+  const router = useRouter();
+  const { username } = router.query;
+
+  console.log(username);
   // TODO may want to enable 'light mode' vs 'dark mode'
 
   useEffect(() => {
@@ -88,6 +93,7 @@ export default function Game() {
   return (
     <>
       <h1 className="text-center font-mono text-3xl m-2">Code Race</h1>
+      <div class="text-right">{username}</div>
       <br />
       <div className="grid grid-cols-2 gap-4">
         <div className="font-mono col-span-1 border border-white m-2 p-3 rounded-lg">

@@ -5,7 +5,7 @@ function Solution(props) {
       className="border-2 border-gray-400 rounded-lg w-5/6"
       rows="9"
       value={props.userCode}
-      onChange={(e) => props.setUserCode(e.value)}
+      onChange={(e) => props.setUserCode(e.target.value)}
     />
   );
 }
