@@ -18,9 +18,8 @@ function Leaderboard(props) {
 
   return (
     <div className="font-mono col-span-1 border border-secondary m-2 p-3 rounded-lg">
-      <div>Leaderboard</div>
+      <div className="text-2xl text-secondary m-2">Leaderboard</div>
       <table className="table">
-        {/* head */}
         <thead>
           <tr>
             <th>Place</th>

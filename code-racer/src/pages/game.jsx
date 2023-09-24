@@ -98,7 +98,7 @@ export default function Game() {
               // TODO don't hard-code the body we send to the BE. need to track the user's userId
               const cur_body = {
                 userId: "dconway",
-                responses: ["2", "2", "3"],
+                responses: ["1", "2", "3"],
               };
 
               fetch("http://localhost:3333/answer", {
@@ -114,7 +114,6 @@ export default function Game() {
                   }
                 })
                 .then((x) => {
-                  // TODO test that this works correctly when we have actually won
                   if (x.hasWon) {
                     alert("Congratulations! You solved the problem!");
                   }

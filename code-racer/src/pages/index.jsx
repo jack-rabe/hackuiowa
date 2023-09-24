@@ -25,7 +25,6 @@ async function checkUsername(router, username) {
 }
 
 export default function Welcome() {
-  // TODO check that the length of username is > 0
   // TODO might want to sanitzeHTML(username)
   const [username, setUsername] = useState("");
 
