@@ -76,7 +76,7 @@ export default function Game() {
         "/userSolution.js",
         "utf-8"
       );
-      console.log(file);
+      //console.log(file);
     }
     write(content);
   }
@@ -97,18 +97,55 @@ export default function Game() {
       "userSolution.js",
     ]);
 
-    await runningSolution.output.pipeTo(
-      new WritableStream({
-        write(data) {
-          setUserOutputs(stripAnsiCodes(data));
-          console.log(data);
-        },
-      })
-    );
+    // const myStream = new WritableStream();
+
+    const reader = await runningSolution.output.getReader();
+    const { done, value } = await reader.read();
+    console.log(value);
+    console.log("Ansi");
+    console.log(stripAnsiCodes(value));
+    // setUserOutputs(stripAnsiCodes(value));
+    // console.log(userOutputs)
+    return stripAnsiCodes(value);
+
+    // await runningSolution.output.pipeTo(
+    //   new ReadableStream({
+    //     write(data) {
+    //       setUserOutputs([...userOutputs, stripAnsiCodes(data)]);
+    //       console.log(data);
+    //     },
+    //   })
+    // );
+    console.log("Done awaiting running solution");
   }
 
-  async function testUserCode(userCode) {
+  async function testUserCode(userCode, testInput) {
     var usrCode = userCode;
+    // for (let i = 0; i < testInputs.length; i++){
+    //   var usrCode = userCode;
+
+    //   // Add in test cases and user's algorithm
+    //   usrCode = "var input = " + testInputs[i] + ";\n" + usrCode;
+
+    //   // Add in the call to user's algo, and print its output to console (WebContainer's console)
+    //   usrCode = usrCode + "var output = solution(input);    console.log(output);\n"
+    //   console.log(usrCode);
+    //   console.log("Awaiting now");
+    //   await runUserCode(usrCode);
+    //   console.log("Done awaiting");
+    // }
+    usrCode = "var input = " + testInput + ";\n" + usrCode;
+
+    // Add in the call to user's algo, and print its output to console (WebContainer's console)
+    usrCode =
+      usrCode + "var output = solution(input);    console.log(output);\n";
+    console.log(usrCode);
+    console.log("Awaiting now");
+    return await runUserCode(usrCode);
+    // console.log("Done awaiting");
+    // console.log("EXITTTTED for loop");
+
+    /*
 
     // Add in test cases and user's solution
     usrCode =
@@ -119,6 +156,7 @@ export default function Game() {
       usrCode + "var output = solution(input1);\n    console.log(output);";
     console.log(usrCode);
     await runUserCode(usrCode);
+    */
   }
   const [leaderboard, setLeaderboard] = useState([]);
 
@@ -260,31 +298,21 @@ export default function Game() {
           <button
             className="btn btn-primary font-mono"
             onClick={() => {
-              testUserCode(userCode).then(() => {
-                const cur_body = {
-                  userId: username,
-                  responses: userOutputs,
-                };
-                fetch(hostName + "/answer", {
-                  method: "POST",
-                  body: JSON.stringify(cur_body),
-                })
-                  .then((res) => {
-                    if (res.status != 200) {
-                      console.log("Backend is currently down");
-                      return;
-                    } else {
-                      return res.json();
-                    }
-                  })
-                  .then(() => {
+              let realUserOutputs = [];
+
+              testUserCode(userCode, testInputs[0]).then((e) => {
+                realUserOutputs.push(e);
+                testUserCode(userCode, testInputs[1]).then((f) => {
+                  realUserOutputs.push(f);
+                  testUserCode(userCode, testInputs[2]).then((h) => {
+                    realUserOutputs.push(h);
+                    console.log("User outputs");
+                    console.log(realUserOutputs);
                     const cur_body = {
                       userId: username,
-                      responses: userOutputs,
+                      responses: realUserOutputs,
                     };
-                    console.log("cur body");
-                    console.log(cur_body);
-                    fetch("http://localhost:3333/answer", {
+                    fetch(hostName + "/answer", {
                       method: "POST",
                       body: JSON.stringify(cur_body),
                     })
@@ -296,14 +324,83 @@ export default function Game() {
                           return res.json();
                         }
                       })
-                      .then((x) => {
-                        if (x.hasWon) {
-                          alert("Congratulations! You solved the problem!");
-                        }
-                        setMissedQuestions(x.missedQuestions);
+                      .then(() => {
+                        const cur_body = {
+                          userId: username,
+                          responses: realUserOutputs,
+                        };
+                        console.log("cur body");
+                        console.log(cur_body);
+                        fetch("http://localhost:3333/answer", {
+                          method: "POST",
+                          body: JSON.stringify(cur_body),
+                        })
+                          .then((res) => {
+                            if (res.status != 200) {
+                              console.log("Backend is currently down");
+                              return;
+                            } else {
+                              return res.json();
+                            }
+                          })
+                          .then((x) => {
+                            if (x.hasWon) {
+                              alert("Congratulations! You solved the problem!");
+                            }
+                            setMissedQuestions(x.missedQuestions);
+                          });
                       });
                   });
+                });
+
+                setTestCasesVisible(true);
               });
+
+              // testUserCode(userCode).then(() => {
+              //   console.log("Working")
+              //   const cur_body = {
+              //     userId: username,
+              //     responses: userOutputs,
+              //   };
+              //   fetch(hostName + "/answer", {
+              //     method: "POST",
+              //     body: JSON.stringify(cur_body),
+              //   })
+              //     .then((res) => {
+              //       if (res.status != 200) {
+              //         console.log("Backend is currently down");
+              //         return;
+              //       } else {
+              //         return res.json();
+              //       }
+              //     })
+              //     .then(() => {
+              //       const cur_body = {
+              //         userId: username,
+              //         responses: userOutputs,
+              //       };
+              //       console.log("cur body");
+              //       console.log(cur_body);
+              //       fetch("http://localhost:3333/answer", {
+              //         method: "POST",
+              //         body: JSON.stringify(cur_body),
+              //       })
+              //         .then((res) => {
+              //           if (res.status != 200) {
+              //             console.log("Backend is currently down");
+              //             return;
+              //           } else {
+              //             return res.json();
+              //           }
+              //         })
+              //         .then((x) => {
+              //           if (x.hasWon) {
+              //             alert("Congratulations! You solved the problem!");
+              //           }
+              //           setMissedQuestions(x.missedQuestions);
+              //         });
+              //     });
+              // });
 
               setTestCasesVisible(true);
             }}
