@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import React from "react";
 import Solution from "@/components/Solution";
-import ProblemStatement from "@/components/ProblemStatement";
 import TestCases from "@/components/TestCases";
 import TestOutput from "@/components/TestOutput";
 import Leaderboard from "@/components/Leaderboard";
@@ -93,12 +92,12 @@ export default function Game() {
   return (
     <>
       <h1 className="text-center font-mono text-3xl m-2">Code Race</h1>
-      <div class="text-right">{username}</div>
+      <div class="text-right">Username: {username}</div>
       <br />
       <div className="grid grid-cols-2 gap-4">
         <div className="font-mono col-span-1 border border-white m-2 p-3 rounded-lg">
           <h3 className="text-2xl pb-1">Problem</h3>
-          <ProblemStatement problem={problem} />
+          <div>{problem}</div>
           <br />
           <h3 className="text-2xl pb-1">Sample Test Cases</h3>
           <TestCases cases={testCases} />

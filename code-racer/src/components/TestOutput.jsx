@@ -15,9 +15,11 @@ function TestOutput(props) {
   if (allTests.length === 0) {
     return <div>No test cases provided.</div>;
   }
+
   return (
     <>
       <div className="text-2xl">Test Cases</div>
+
       {allTests.map((element, index) => (
         <div key={index}>
           Case: {element.testInputs}
