@@ -2,6 +2,10 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 
 async function checkUsername(router, username) {
+  if (username === "") {
+    alert("Please enter a username first");
+    return;
+  }
   fetch("http://localhost:3333/createUser", {
     method: "POST",
     body: JSON.stringify({
@@ -14,30 +18,34 @@ async function checkUsername(router, username) {
       );
     } else {
       alert(`Welcome, ${username}!`);
-      router.push("/game");
+      sessionStorage.setItem("username", username);
+      router.push(`/game?username=${username}`);
     }
   });
 }
 
-export default function welcome() {
-  // TODO check that the length of username is > 0
+export default function Welcome() {
   // TODO might want to sanitzeHTML(username)
   const [username, setUsername] = useState("");
+
   const router = useRouter();
+
   return (
     <>
-      <h1 className="text-center text-3xl">Welcome to Code Race</h1>
+      <h1 className="font-mono text-center font-bold text-primary text-4xl m-3">
+        Welcome to Code Race
+      </h1>
       <br />
-      <div className="flex items-center justify-center">Username</div>
+      <div className="font-mono flex items-center justify-center text-xl text-secondary">
+        Username
+      </div>
       <div className="flex items-center justify-center">
         <input
           id="username"
           type="text"
-          className="w-72 h-12 border-2 border-gray-400 rounded-lg pl-4 text-lg focus:outline-none"
+          className="w-72 h-12 border-2 border-secondary rounded-lg pl-4 text-lg focus:outline-none m-1"
           value={username}
           onChange={(e) => {
-            console.log(e);
-            console.log(e.target.value);
             setUsername(e.target.value);
           }}
           onKeyDown={(e) => {
@@ -50,7 +58,7 @@ export default function welcome() {
       <br />
       <div className="flex items-center justify-center">
         <button
-          className="btn btn-primary"
+          className="font-mono btn btn-primary"
           onClick={() => checkUsername(router, username)}
         >
           Submit

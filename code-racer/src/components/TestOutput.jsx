@@ -15,23 +15,24 @@ function TestOutput(props) {
   if (allTests.length === 0) {
     return <div>No test cases provided.</div>;
   }
+
   return (
-    <>
-      <div className="text-2xl">Test Cases</div>
-      {allTests.map((element, index) => (
-        <div key={index}>
-          Case: {element.testInputs}
-          <br />
-          User Output: {element.userOutputs}
-          <br />
-          {element.missedQuestions.toString() === "false"
-            ? "Incorrect"
-            : "Correct"}
-          <br />
-          <br />
-        </div>
-      ))}
-    </>
+    <div className="p-2 m-2 rounded-lg border border-secondary font-mono ">
+      <div className="text-2xl text-secondary m-2">Test Cases</div>
+      <div className="flex flex-col">
+        {allTests.map((element, index) => (
+          <div className="border-white border m-1 p-1 rounded-lg" key={index}>
+            <div>Case: {element.testInputs}</div>
+            <div>User Output: {element.userOutputs}</div>
+            {element.missedQuestions.toString() !== "false" ? (
+              <div className="text-success font-bold">Correct</div>
+            ) : (
+              <div className="text-error font-bold">Incorrect</div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 

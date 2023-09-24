@@ -1,9 +1,12 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"io"
 	"net/http"
+
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type QuestionResponse = struct {
@@ -15,16 +18,24 @@ type QuestionResponse = struct {
 }
 
 func getQuestion(w http.ResponseWriter, r *http.Request) {
-	question := QuestionResponse{
-		Question:    "what is the smallest element in this array",
-		Inputs:      []string{"[1]", "[1,2]"},
-		Solution:    "this is a solution",
-		SampleInput: "[3,2,1]",
-		Explanation: "this is an explanation"}
-
-	responseBody, err := json.Marshal(question)
+	db, client := connectToMongo()
+	collection := db.Collection("questions")
+	questionObject := collection.FindOne(context.Background(), bson.M{"day": getQuestionNumberForDay()})
+	var questionResult QuestionResponse
+	err := questionObject.Decode(&questionResult)
 	if err != nil {
 		panic(err)
 	}
+	responseBody, err := json.Marshal(questionResult)
+	if err != nil {
+		panic(err)
+	}
+
+	defer func() {
+		if err = client.Disconnect(context.Background()); err != nil {
+			panic(err)
+		}
+	}()
+
 	io.WriteString(w, string(responseBody))
 }
