@@ -12,12 +12,8 @@
     "day": 1
   },
   {
-    "explanation": "Of the prime divisorsr of 42 (2, 3, and 7), 7 is the largest",
-    "inputs": [
-      "[1114767360]",
-      "[32862176928000]",
-      "[2]"
-    ],
+    "explanation": "Of the prime divisors of 42 (2, 3, and 7), 7 is the largest",
+    "inputs": ["[1114767360]", "[32862176928000]", "[2]"],
     "question": "Given a number x, compute the its largest prime divisor",
     "sampleInput": "[42]",
     "solution": "7",
@@ -25,11 +21,7 @@
   },
   {
     "explanation": "There are 3 ways the frog can be 3 steps away from the origin: either by taking a single hop three times, a double hop and then a single hop, or a single hop and then a double hop",
-    "inputs": [
-      "[2]",
-      "[49]",
-      "[71]"
-    ],
+    "inputs": ["[2]", "[49]", "[71]"],
     "question": "There is a frog that can jump two steps forward or one step forward at any given point. Compute the distinct number of ways for the frog to get to x number of steps away from its starting position",
     "sampleInput": "[3]",
     "solution": "3",
@@ -49,11 +41,7 @@
   },
   {
     "explanation": "8 is divisible by 2, so 8 is not prime",
-    "inputs": [
-      "8",
-      "7119",
-      "6823"
-    ],
+    "inputs": ["8", "7119", "6823"],
     "question": "Given a number x, determine if x is prime",
     "sampleInput": "8",
     "solution": "false",

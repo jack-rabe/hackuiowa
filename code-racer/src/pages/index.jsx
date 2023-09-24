@@ -17,8 +17,6 @@ async function checkUsername(router, username) {
         "That username has already been selected, please choose a different one"
       );
     } else {
-      alert(`Welcome, ${username}!`);
-      sessionStorage.setItem("username", username);
       router.push(`/game?username=${username}`);
     }
   });

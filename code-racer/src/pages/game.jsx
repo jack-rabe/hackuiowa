@@ -36,7 +36,16 @@ export default function Game() {
   const [testInputs, setTestInputs] = useState([]);
   const [missedQuestions, setMissedQuestions] = useState([]);
 
-  // const [userOutput, setUserOutput] = useState("");
+  const [competeStartDate, setCompeteStartDate] = useState(
+    new Date("2023-09-24T14:30:00Z")
+  );
+  // TODO need to update this to the correct date and time when we receive information about the competition from the BE
+
+  function time_between_two_dates(d1, d2) {
+    return `${Math.floor((d1 - d2) / 60000)} minutes ${Math.floor(
+      ((d1 - d2) % 60000) / 1000
+    )} seconds`;
+  }
 
   // Setting up WebContainer
   useEffect(() => {
@@ -53,9 +62,6 @@ export default function Game() {
       if (exitCode !== 0) {
         throw new Error("Installation Failed");
       }
-
-      //startDevServer();
-      //runUserCode();
     }
     console.log("Setting up webcontainer");
     getPackage();
@@ -96,11 +102,11 @@ export default function Game() {
     const reader = await runningSolution.output.getReader();
     const { done, value } = await reader.read();
     console.log(value);
-    console.log("Ansi")
-    console.log(stripAnsiCodes(value))
+    console.log("Ansi");
+    console.log(stripAnsiCodes(value));
     // setUserOutputs(stripAnsiCodes(value));
     // console.log(userOutputs)
-    return(stripAnsiCodes(value))
+    return stripAnsiCodes(value);
 
     // await runningSolution.output.pipeTo(
     //   new ReadableStream({
@@ -130,14 +136,14 @@ export default function Game() {
     // }
     usrCode = "var input = " + testInput + ";\n" + usrCode;
 
-      // Add in the call to user's algo, and print its output to console (WebContainer's console)
-    usrCode = usrCode + "var output = solution(input);    console.log(output);\n"
+    // Add in the call to user's algo, and print its output to console (WebContainer's console)
+    usrCode =
+      usrCode + "var output = solution(input);    console.log(output);\n";
     console.log(usrCode);
     console.log("Awaiting now");
     return await runUserCode(usrCode);
     // console.log("Done awaiting");
     // console.log("EXITTTTED for loop");
-
 
     /*
 
@@ -176,7 +182,7 @@ export default function Game() {
           addTimes.push({
             name: x[i].userId,
             progress: x[i].numCorrect,
-            time: Date(),
+            time: time_between_two_dates(new Date(), competeStartDate),
           });
         }
         setLeaderboard(addTimes);
@@ -210,8 +216,16 @@ export default function Game() {
 
     // TODO don't hard code this
     setLeaderboard([
-      { name: "Joe", progress: 3, time: Date() },
-      { name: username, progress: 0, time: Date() },
+      {
+        name: "Joe",
+        progress: 3,
+        time: time_between_two_dates(new Date(), competeStartDate),
+      },
+      {
+        name: username,
+        progress: 0,
+        time: time_between_two_dates(new Date(), competeStartDate),
+      },
     ]);
 
     const socket = new WebSocket("ws://34.136.66.166:3333/ws");
@@ -229,14 +243,20 @@ export default function Game() {
       if (data.includes("joined")) {
         const uname = data.slice(0, data.length - 7);
         setLeaderboard((prevState) => {
-          return [...prevState, { name: uname, progress: 0, time: Date() }];
+          return [
+            ...prevState,
+            {
+              name: uname,
+              progress: 0,
+              time: time_between_two_dates(new Date(), competeStartDate),
+            },
+          ];
         });
       } else if (data.includes("improved")) {
         setLeaderboard((prevState) => {
           let deepCopy = JSON.parse(JSON.stringify(prevState));
           let name = data.slice(0, data.length - 11);
           let newScore = data.slice(data.length - 1, data.length);
-
           for (let i in deepCopy) {
             if (deepCopy[i].name == name) {
               deepCopy[i].progress = newScore;
@@ -278,19 +298,7 @@ export default function Game() {
           <button
             className="btn btn-primary font-mono"
             onClick={() => {
-              // TODO replace this with the actual code results the user has
-              // setUserOutputs(["1", "2", "3"]);
-              // TODO don't hard-code the body we send to the BE. need to track the user's userId
-              // const cur_body = {
-              //   userId: username,
-              //   responses: ["1", "2", "9"],
-              // };
-
-              // for (let i in testInputs){
-              //   testUserCode(userCode, testInputs[i])
-              // }
-
-              let realUserOutputs = []
+              let realUserOutputs = [];
 
               testUserCode(userCode, testInputs[0]).then((e) => {
                 realUserOutputs.push(e.split('\n').join('').split('\r').join(''));
@@ -316,37 +324,45 @@ export default function Game() {
                         return res.json();
                       }
                     })
-                    .then(() => {
-                      const cur_body = {
-                        userId: username,
-                        responses: realUserOutputs,
-                      };
-                      console.log("cur body");
-                      console.log(cur_body);
-                      fetch("http://localhost:3333/answer", {
-                        method: "POST",
-                        body: JSON.stringify(cur_body),
+                      .then((res) => {
+                        if (res.status != 200) {
+                          console.log("Backend is currently down");
+                          return;
+                        } else {
+                          return res.json();
+                        }
                       })
-                        .then((res) => {
-                          if (res.status != 200) {
-                            console.log("Backend is currently down");
-                            return;
-                          } else {
-                            return res.json();
-                          }
+                      .then(() => {
+                        const cur_body = {
+                          userId: username,
+                          responses: realUserOutputs,
+                        };
+                        console.log("cur body");
+                        console.log(cur_body);
+                        fetch("http://localhost:3333/answer", {
+                          method: "POST",
+                          body: JSON.stringify(cur_body),
                         })
-                        .then((x) => {
-                          if (x.hasWon) {
-                            alert("Congratulations! You solved the problem!");
-                          }
-                          setMissedQuestions(x.missedQuestions);
-                        });
-                    });
+                          .then((res) => {
+                            if (res.status != 200) {
+                              console.log("Backend is currently down");
+                              return;
+                            } else {
+                              return res.json();
+                            }
+                          })
+                          .then((x) => {
+                            if (x.hasWon) {
+                              alert("Congratulations! You solved the problem!");
+                            }
+                            setMissedQuestions(x.missedQuestions);
+                          });
+                      });
+                  });
                 });
-              });
-  
+
                 setTestCasesVisible(true);
-              })
+              });
 
               // testUserCode(userCode).then(() => {
               //   console.log("Working")
