@@ -53,7 +53,7 @@ export default function Game() {
       { name: "Joe", progress: 3, time: Date() },
       { name: "Bob", progress: 3, time: Date() },
       { name: "Fred", progress: 1, time: Date() },
-      { name: "Jimmy", progress: 0, time: Date() },
+      // { name: "Jimmy", progress: 0, time: Date() },
     ]);
 
     const socket = new WebSocket("ws://localhost:3333/ws"); // Replace with your server's WebSocket URL
@@ -61,20 +61,24 @@ export default function Game() {
       socket.send(username);
     });
     socket.addEventListener("message", (event) => {
-      const data = event.data
+      const data = event.data;
       if (!data) {
-        return
+        return;
       }
 
+      // need some way for the second user to get the first user's username
+
       if (data.includes("joined")) {
-        alert("hi " + data.slice(0, data.length - 7))
-      }
-      else if (data.includes("improved")) {
-        alert("hi " + data.slice(0, data.length - 7))
+        const uname = data.slice(0, data.length - 7);
+        setLeaderboard((prevState) => {
+          return [...prevState, { name: uname, progress: 0, time: Date() }];
+        });
+      } else if (data.includes("improved")) {
+        alert("hi " + data.slice(0, data.length - 9));
       }
     });
     // TODO Event handler for WebSocket errors
-    socket.addEventListener("error", (error) => { });
+    socket.addEventListener("error", (error) => {});
   }, []);
 
   return (
@@ -82,7 +86,7 @@ export default function Game() {
       <h1 className="text-center text-primary font-mono text-4xl font-bold m-2">
         Code Race
       </h1>
-      <div class="text-center italic text-2xl text-info">{username}</div>
+      <div className="text-center italic text-2xl text-info">{username}</div>
       <br />
       <div className="grid grid-cols-2 gap-4">
         <div className="font-mono col-span-1 border border-secondary m-2 p-3 rounded-lg">
