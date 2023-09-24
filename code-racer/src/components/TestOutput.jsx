@@ -12,7 +12,7 @@ function TestOutput(props) {
     });
   }
 
-  if (allTests.length == 0) {
+  if (allTests.length === 0) {
     return <div>No test cases provided.</div>;
   }
   return (
@@ -24,7 +24,7 @@ function TestOutput(props) {
           <br />
           User Output: {element.userOutputs}
           <br />
-          {element.missedQuestions.toString() == "false"
+          {element.missedQuestions.toString() === "false"
             ? "Incorrect"
             : "Correct"}
           <br />
