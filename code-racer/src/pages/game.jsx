@@ -293,11 +293,11 @@ export default function Game() {
               let realUserOutputs = []
 
               testUserCode(userCode, testInputs[0]).then((e) => {
-                realUserOutputs.push(e);
+                realUserOutputs.push(e.split('\n').join('').split('\r').join(''));
                 testUserCode(userCode, testInputs[1]).then((f) => {
-                  realUserOutputs.push(f)
+                  realUserOutputs.push(f.split('\n').join('').split('\r').join(''))
                   testUserCode(userCode, testInputs[2]).then((h) => {
-                    realUserOutputs.push(h)
+                    realUserOutputs.push(h.split('\n').join('').split('\r').join(''))
                   console.log("User outputs")
                   console.log(realUserOutputs)
                   const cur_body = {
