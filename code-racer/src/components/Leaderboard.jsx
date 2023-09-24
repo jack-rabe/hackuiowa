@@ -25,7 +25,7 @@ function Leaderboard(props) {
             <th>Place</th>
             <th>Name</th>
             <th>Tests Passing</th>
-            <th>Time since competition start</th>
+            <th>Finish Time</th>
           </tr>
         </thead>
         <tbody>
@@ -34,7 +34,7 @@ function Leaderboard(props) {
               <th>{index + 1}</th>
               <td>{element.name}</td>
               <td>{element.progress}</td>
-              <td>{element.time}</td>
+              <td>{element.time || "N/A"}</td>
             </tr>
           ))}
         </tbody>

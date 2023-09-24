@@ -182,7 +182,7 @@ export default function Game() {
           addTimes.push({
             name: x[i].userId,
             progress: x[i].numCorrect,
-            time: time_between_two_dates(new Date(), competeStartDate),
+            time: x[i].numCorrect === 3 ? time_between_two_dates(new Date(), competeStartDate) : null,
           });
         }
         setLeaderboard(addTimes);
@@ -213,20 +213,6 @@ export default function Game() {
 
         setTestInputs(x.inputs);
       });
-
-    // TODO don't hard code this
-    setLeaderboard([
-      {
-        name: "Joe",
-        progress: 3,
-        time: time_between_two_dates(new Date(), competeStartDate),
-      },
-      {
-        name: username,
-        progress: 0,
-        time: time_between_two_dates(new Date(), competeStartDate),
-      },
-    ]);
 
     const socket = new WebSocket("wss://racer-server.tech/ws");
     socket.addEventListener("open", (event) => {
