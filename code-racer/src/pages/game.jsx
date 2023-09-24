@@ -6,22 +6,23 @@ import TestOutput from "@/components/TestOutput";
 import Leaderboard from "@/components/Leaderboard";
 import { useRouter } from "next/router";
 
-
 import { WebContainer } from "@webcontainer/api";
 /** @type {import('@webcontainer/api').WebContainer} */
-import { files } from '../../files';
+import { files } from "../../files";
 
 // Setting up WebContainer
 let webcontainerInstance;
 
-async function installDependencies(){
-  const installProcess = await webcontainerInstance.spawn('npm', ['install']);
+async function installDependencies() {
+  const installProcess = await webcontainerInstance.spawn("npm", ["install"]);
 
-  installProcess.output.pipeTo(new WritableStream({
-    write(data){
-      //console.log(data);
-    }
-  }));
+  installProcess.output.pipeTo(
+    new WritableStream({
+      write(data) {
+        //console.log(data);
+      },
+    })
+  );
   return installProcess.exit;
 }
 
@@ -35,24 +36,23 @@ export default function Game() {
   const [testInputs, setTestInputs] = useState([]);
   const [missedQuestions, setMissedQuestions] = useState([]);
 
-  const [userOutput, setUserOutput] = useState("");
-
+  // const [userOutput, setUserOutput] = useState("");
 
   // Setting up WebContainer
-  useEffect(()=> {
-    async function getPackage(){
-      console.log(files['userSolution.js'].file.contents);
+  useEffect(() => {
+    async function getPackage() {
+      console.log(files["userSolution.js"].file.contents);
 
       // Makes sure that webcontainer only boots once
-      if (!webcontainerInstance){
+      if (!webcontainerInstance) {
         webcontainerInstance = await WebContainer.boot();
       }
       await webcontainerInstance.mount(files);
 
       const exitCode = await installDependencies();
       if (exitCode !== 0) {
-        throw new Error('Installation Failed');
-      };
+        throw new Error("Installation Failed");
+      }
 
       //startDevServer();
       //runUserCode();
@@ -61,57 +61,58 @@ export default function Game() {
     getPackage();
   }, []);
 
-   // Function to write to userSolution.js
-   function writeContent(content){
-
+  // Function to write to userSolution.js
+  function writeContent(content) {
     /** @param {string} content */
-    async function write(content){
-      await webcontainerInstance.fs.writeFile('/userSolution.js', content);
-      const file = await webcontainerInstance.fs.readFile('/userSolution.js', 'utf-8');
+    async function write(content) {
+      await webcontainerInstance.fs.writeFile("/userSolution.js", content);
+      const file = await webcontainerInstance.fs.readFile(
+        "/userSolution.js",
+        "utf-8"
+      );
       console.log(file);
-    };
+    }
     write(content);
   }
 
-  const stripAnsiCodes = str => str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+  const stripAnsiCodes = (str) =>
+    str.replace(
+      /[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g,
+      ""
+    );
 
-  async function runUserCode(usrCode){
+  async function runUserCode(usrCode) {
     console.log("Running user's solution");
 
     // Write user's solution to userSolution.js
     writeContent(usrCode);
 
-    const runningSolution = await webcontainerInstance.spawn('node', ['userSolution.js']);
-    //setUserOutput(runningSolution.output);
-    //var out = runningSolution.output;
-    //console.log(out.text());
-    /*
-    const reader = await runningSolution.output.getReader();
-    const { done, value } = await reader.read();
-    console.log(value);
-    setUserOutput(stripAnsiCodes(value));
-    */
-    
-    
-    runningSolution.output.pipeTo(new WritableStream({
-      write(data){
-        setUserOutput(stripAnsiCodes(data));
-        console.log(data);
-      }
-    }));
-    
+    const runningSolution = await webcontainerInstance.spawn("node", [
+      "userSolution.js",
+    ]);
+
+    await runningSolution.output.pipeTo(
+      new WritableStream({
+        write(data) {
+          setUserOutputs(stripAnsiCodes(data));
+          console.log(data);
+        },
+      })
+    );
   }
 
-  function testUserCode(userCode){
+  async function testUserCode(userCode) {
     var usrCode = userCode;
-    
+
     // Add in test cases and user's solution
-    usrCode = "var input2 = [2,5,3,1,8,9,7,6];    var input1 = [2,1,4];\n" + usrCode;
+    usrCode =
+      "var input2 = [2,5,3,1,8,9,7,6];    var input1 = [2,1,4];\n" + usrCode;
 
     // Add in the call to user's solution, and print its output to console
-    usrCode = usrCode + "var output = solution(input1);\n    console.log(output);";
+    usrCode =
+      usrCode + "var output = solution(input1);\n    console.log(output);";
     console.log(usrCode);
-    runUserCode(usrCode);    
+    await runUserCode(usrCode);
   }
   const [leaderboard, setLeaderboard] = useState([]);
 
@@ -209,7 +210,7 @@ export default function Game() {
       }
     });
     // TODO Event handler for WebSocket errors
-    socket.addEventListener("error", (error) => { });
+    socket.addEventListener("error", (error) => {});
   }, []);
 
   return (
@@ -240,37 +241,51 @@ export default function Game() {
             className="btn btn-primary font-mono"
             onClick={() => {
               // TODO replace this with the actual code results the user has
-              setUserOutputs(["1", "2", "3"]);
+              // setUserOutputs(["1", "2", "3"]);
               // TODO don't hard-code the body we send to the BE. need to track the user's userId
-              const cur_body = {
-                userId: username,
-                responses: ["1", "2", "9"],
-              };
+              // const cur_body = {
+              //   userId: username,
+              //   responses: ["1", "2", "9"],
+              // };
 
-              fetch("http://localhost:3333/answer", {
-                method: "POST",
-                body: JSON.stringify(cur_body),
-              })
-                .then((res) => {
-                  if (res.status != 200) {
-                    console.log("Backend is currently down");
-                    return;
-                  } else {
-                    return res.json();
-                  }
+              testUserCode(userCode)
+                .then(() => {
+                  console.log(username);
+                  console.log(userOutputs);
                 })
-                .then((x) => {
-                  if (x.hasWon) {
-                    alert("Congratulations! You solved the problem!");
-                  }
-                  setMissedQuestions(x.missedQuestions);
+                .then(() => {
+                  const cur_body = {
+                    userId: username,
+                    responses: userOutputs,
+                  };
+                  console.log("cur body");
+                  console.log(cur_body);
+                  fetch("http://localhost:3333/answer", {
+                    method: "POST",
+                    body: JSON.stringify(cur_body),
+                  })
+                    .then((res) => {
+                      if (res.status != 200) {
+                        console.log("Backend is currently down");
+                        return;
+                      } else {
+                        return res.json();
+                      }
+                    })
+                    .then((x) => {
+                      if (x.hasWon) {
+                        alert("Congratulations! You solved the problem!");
+                      }
+                      setMissedQuestions(x.missedQuestions);
+                    });
                 });
+
               setTestCasesVisible(true);
             }}
           >
             Submit
           </button>
-          <div>{userOutput}</div>
+          <div>{userOutputs}</div>
           <br />
           <br />
           {testCasesVisible && (
