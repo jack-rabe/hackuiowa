@@ -44,7 +44,7 @@ func postAnswer(w http.ResponseWriter, r *http.Request) {
 
 	db, client := connectToMongo()
 	collection := db.Collection("answers")
-	answerObject := collection.FindOne(context.Background(), bson.M{})
+	answerObject := collection.FindOne(context.Background(), bson.M{"day": getQuestionNumberForDay()})
 	var answerResult X
 	err = answerObject.Decode(&answerResult)
 	if err != nil {

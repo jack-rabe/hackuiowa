@@ -20,7 +20,7 @@ type QuestionResponse = struct {
 func getQuestion(w http.ResponseWriter, r *http.Request) {
 	db, client := connectToMongo()
 	collection := db.Collection("questions")
-	questionObject := collection.FindOne(context.Background(), bson.M{})
+	questionObject := collection.FindOne(context.Background(), bson.M{"day": getQuestionNumberForDay()})
 	var questionResult QuestionResponse
 	err := questionObject.Decode(&questionResult)
 	if err != nil {
