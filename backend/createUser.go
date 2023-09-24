@@ -33,7 +33,6 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 	playersMap[req.UserID] = Player{ID: req.UserID, NumCorrect: 0}
 
-	w.Header().Set("Access-Control-Allow-Origin", "*")
 	if isDuplicate {
 		w.WriteHeader(400)
 	} else {
