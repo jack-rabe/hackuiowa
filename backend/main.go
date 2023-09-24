@@ -54,6 +54,7 @@ func main() {
 	router.HandleFunc("/answer", postAnswer)
 	router.HandleFunc("/question", getQuestion)
 	router.HandleFunc("/createUser", createUser)
+	router.HandleFunc("/users", getUsers)
 	router.HandleFunc("/ws", handleWebSocket)
 	http.Handle("/", router)
 

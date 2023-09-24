@@ -39,3 +39,21 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 	}
 }
+
+type NicePlayer struct {
+	ID         string `json:"userId"`
+	NumCorrect int    `json:"numCorrect"`
+}
+
+func getUsers(w http.ResponseWriter, r *http.Request) {
+
+	players := make([]NicePlayer, 0)
+	for _, player := range playersMap {
+		players = append(players, NicePlayer{ID: player.ID, NumCorrect: player.NumCorrect})
+	}
+	res, err := json.Marshal(players)
+	if err != nil {
+		panic(err)
+	}
+	io.WriteString(w, string(res))
+}
