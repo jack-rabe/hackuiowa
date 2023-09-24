@@ -6,7 +6,7 @@ async function checkUsername(router, username) {
     alert("Please enter a username first");
     return;
   }
-  fetch("http://34.136.66.166:3333/createUser", {
+  fetch("https://racer-server.tech/createUser", {
     method: "POST",
     body: JSON.stringify({
       userId: username,
