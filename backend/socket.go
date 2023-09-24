@@ -31,7 +31,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	p, ok := playersMap[userId]
 	if ok && p.Conn != nil {
 		for _, player := range playersMap {
-			if player.Conn == nil {
+			if player.Conn == nil || player.ID == userId {
 				continue
 			}
 			if err = player.Conn.WriteMessage(websocket.TextMessage, []byte(userId+" joined")); err != nil {
@@ -44,20 +44,10 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	defer delete(playersMap, userId)
 
 	for {
-		// TODO don't want to read messages, only write them
-		_, connBody, err := conn.ReadMessage()
+		_, _, err := conn.ReadMessage()
 		if err != nil {
 			fmt.Println(err)
 			return
-		}
-		for _, player := range playersMap {
-			if player.Conn == nil {
-				continue
-			}
-			if err := player.Conn.WriteMessage(websocket.TextMessage, connBody); err != nil {
-				fmt.Println(err)
-				return
-			}
 		}
 	}
 }

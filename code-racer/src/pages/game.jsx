@@ -61,10 +61,20 @@ export default function Game() {
       socket.send(username);
     });
     socket.addEventListener("message", (event) => {
-      console.log(event.data);
+      const data = event.data
+      if (!data) {
+        return
+      }
+
+      if (data.includes("joined")) {
+        alert("hi " + data.slice(0, data.length - 7))
+      }
+      else if (data.includes("improved")) {
+        alert("hi " + data.slice(0, data.length - 7))
+      }
     });
     // TODO Event handler for WebSocket errors
-    socket.addEventListener("error", (error) => {});
+    socket.addEventListener("error", (error) => { });
   }, []);
 
   return (

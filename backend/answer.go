@@ -48,16 +48,14 @@ func postAnswer(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	fmt.Println(answerResult)
 	missedQuestions := make([]int, 0)
 	for idx, expected := range answerResult.Expected {
-		fmt.Println(req.Responses[idx], expected)
 		if expected != req.Responses[idx] {
 			missedQuestions = append(missedQuestions, idx)
 		}
-
 	}
-	answerReponse := PostAnswerResponse{HasWon: len(missedQuestions) == 0, MissedQuestions: missedQuestions}
+	numCorrect := len(missedQuestions)
+	answerReponse := PostAnswerResponse{HasWon: numCorrect == 0, MissedQuestions: missedQuestions}
 	responseBody, err := json.Marshal(answerReponse)
 	if err != nil {
 		panic(err)
@@ -68,6 +66,13 @@ func postAnswer(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 	}()
+
+	p := playersMap[req.UserID]
+	if numCorrect > p.NumCorrect {
+		// for _, otherPlayer := range playersMap {
+
+		// }
+	}
 
 	io.WriteString(w, string(responseBody))
 }
