@@ -17,17 +17,17 @@ function TestOutput(props) {
   }
 
   return (
-    <div className="p-2 rounded-lg border border-secondary font-mono">
+    <div className="p-2 m-2 rounded-lg border border-secondary font-mono ">
       <div className="text-2xl text-secondary m-2">Test Cases</div>
       <div className="flex flex-col">
         {allTests.map((element, index) => (
           <div className="border-white border m-1 p-1 rounded-lg" key={index}>
             <div>Case: {element.testInputs}</div>
             <div>User Output: {element.userOutputs}</div>
-            {element.missedQuestions.toString() === "false" ? (
-              <div className="text-error font-bold">Incorrect</div>
-            ) : (
+            {element.missedQuestions.toString() !== "false" ? (
               <div className="text-success font-bold">Correct</div>
+            ) : (
+              <div className="text-error font-bold">Incorrect</div>
             )}
           </div>
         ))}

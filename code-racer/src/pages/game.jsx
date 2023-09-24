@@ -112,7 +112,7 @@ export default function Game() {
       }
     });
     // TODO Event handler for WebSocket errors
-    socket.addEventListener("error", (error) => {});
+    socket.addEventListener("error", (error) => { });
   }, []);
 
   return (
@@ -147,7 +147,7 @@ export default function Game() {
               // TODO don't hard-code the body we send to the BE. need to track the user's userId
               const cur_body = {
                 userId: username,
-                responses: ["2", "2", "3"],
+                responses: ["1", "2", "9"],
               };
 
               fetch("http://localhost:3333/answer", {
