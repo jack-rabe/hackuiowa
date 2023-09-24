@@ -64,7 +64,7 @@ export default function Game() {
       <h1 className="text-center text-primary font-mono text-4xl font-bold m-2">
         Code Race
       </h1>
-      <div class="text-right">{username}</div>
+      <div class="text-center italic text-2xl text-info">{username}</div>
       <br />
       <div className="grid grid-cols-2 gap-4">
         <div className="font-mono col-span-1 border border-primary m-2 p-3 rounded-lg">
