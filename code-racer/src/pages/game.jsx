@@ -74,7 +74,7 @@ export default function Game() {
           return [...prevState, { name: uname, progress: 0, time: Date() }];
         });
       } else if (data.includes("improved")) {
-        alert("hi " + data.slice(0, data.length - 9));
+        alert(data);
       }
     });
     // TODO Event handler for WebSocket errors
