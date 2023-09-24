@@ -116,7 +116,7 @@ export default function Game() {
 
   const router = useRouter();
   const { username } = router.query;
-  const hostName = "http://34.136.66.166:3333";
+  const hostName = "https://racer-server.tech";
 
   // TODO may want to enable 'light mode' vs 'dark mode'
 
@@ -176,7 +176,7 @@ export default function Game() {
       },
     ]);
 
-    const socket = new WebSocket("ws://34.136.66.166:3333/ws");
+    const socket = new WebSocket("wss://racer-server.tech/ws");
     socket.addEventListener("open", (event) => {
       socket.send(username);
     });
@@ -216,7 +216,7 @@ export default function Game() {
       }
     });
     // TODO Event handler for WebSocket errors
-    socket.addEventListener("error", (error) => {});
+    socket.addEventListener("error", (error) => { });
   }, []);
 
   return (

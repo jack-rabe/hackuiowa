@@ -68,7 +68,10 @@ func main() {
 		AllowCredentials: true,
 	})
 	handler := c.Handler(router)
-	err := http.ListenAndServe(":3333", handler)
+
+	    certFile := "privkey.pem"
+	    keyFile := "fullchain.pem"
+	    err := http.ListenAndServeTLS(":443", keyFile, certFile , handler)
 	if err != nil {
 		fmt.Println(err)
 		return
