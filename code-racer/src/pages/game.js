@@ -41,11 +41,11 @@ export default function Game() {
     // TODO don't hard-code the body we send to the BE
     const cur_body = {
       userId: "dconway",
-      responses: ["2", "3"],
+      responses: ["2", "3", "3"],
     };
 
     // TODO replace this with the actual code results the user has
-    setUserOutputs(["1", "2"]);
+    setUserOutputs(["1", "2", "3"]);
 
     fetch("http://localhost:3333/answer", {
       method: "POST",
