@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-
+import React from "react";
 import Solution from "@/components/Solution";
 import ProblemStatement from "@/components/ProblemStatement";
 import TestCases from "@/components/TestCases";
@@ -17,6 +17,8 @@ export default function Game() {
   const [missedQuestions, setMissedQuestions] = useState([]);
 
   const [leaderboard, setLeaderboard] = useState([]);
+
+  const [theme, setTheme] = useState("dark");
 
   // TODO may want to enable 'light mode' vs 'dark mode'
 
@@ -44,11 +46,10 @@ export default function Game() {
     // TODO don't hard-code the body we send to the BE. need to track the user's userId
     const cur_body = {
       userId: "dconway",
-      responses: ["2", "3", "3"],
+      responses: ["2", "2", "3"],
     };
 
     // TODO don't hard code this
-    const date2 = new Date("1995-12-17T03:24:00");
     setLeaderboard([
       { name: "Joe", progress: 3, time: Date() },
       { name: "Bob", progress: 3, time: Date() },
@@ -76,15 +77,18 @@ export default function Game() {
         if (x.hasWon) {
           alert("Congratulations! You solved the problem!");
         }
+        console.log(x);
         setMissedQuestions(x.missedQuestions);
       });
   }, []);
 
   return (
-    <>
-      <h1 className="text-center text-3xl">Code Race</h1>
-      <br />
-      <div className="grid grid-cols-2 gap-4">
+    <React.Fragment data-theme={theme}>
+      <h1 className="text-center text-3xl" data-theme={theme}>
+        Code Race
+      </h1>
+      <br data-theme={theme} />
+      <div className="grid grid-cols-2 gap-4" data-theme={theme}>
         <div className="col-span-1">
           <h3 className="text-2xl">Problem</h3>
           <ProblemStatement problem={problem} />
@@ -117,6 +121,6 @@ export default function Game() {
           )}
         </div>
       </div>
-    </>
+    </React.Fragment>
   );
 }
