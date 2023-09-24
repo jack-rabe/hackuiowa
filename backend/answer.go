@@ -57,7 +57,7 @@ func postAnswer(w http.ResponseWriter, r *http.Request) {
 		}
 
 	}
-	answerReponse := PostAnswerResponse{HasWon: false, MissedQuestions: missedQuestions}
+	answerReponse := PostAnswerResponse{HasWon: len(missedQuestions) == 0, MissedQuestions: missedQuestions}
 	responseBody, err := json.Marshal(answerReponse)
 	if err != nil {
 		panic(err)
