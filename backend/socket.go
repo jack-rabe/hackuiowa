@@ -28,16 +28,13 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 	_, msg, err := conn.ReadMessage()
 	userId := string(msg)
 	fmt.Println(playersMap)
-	p, ok := playersMap[userId]
-	if ok && p.Conn != nil {
-		for _, player := range playersMap {
-			if player.Conn == nil || player.ID == userId {
-				continue
-			}
-			if err = player.Conn.WriteMessage(websocket.TextMessage, []byte(userId+" joined")); err != nil {
-				fmt.Println(err)
-				return
-			}
+	for _, player := range playersMap {
+		if player.Conn == nil || player.ID == userId {
+			continue
+		}
+		if err = player.Conn.WriteMessage(websocket.TextMessage, []byte(userId+" joined")); err != nil {
+			fmt.Println(err)
+			return
 		}
 	}
 	playersMap[userId] = Player{ID: userId, NumCorrect: 0, Conn: conn}

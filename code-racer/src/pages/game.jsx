@@ -200,7 +200,6 @@ export default function Game() {
             {
               name: uname,
               progress: 0,
-              time: time_between_two_dates(new Date(), competeStartDate),
             },
           ];
         });
