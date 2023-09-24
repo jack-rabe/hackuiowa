@@ -75,7 +75,7 @@ export default function Game() {
       <div class="text-center italic text-2xl text-info">{username}</div>
       <br />
       <div className="grid grid-cols-2 gap-4">
-        <div className="font-mono col-span-1 border border-primary m-2 p-3 rounded-lg">
+        <div className="font-mono col-span-1 border border-secondary m-2 p-3 rounded-lg">
           <h3 className="text-2xl pb-1 text-secondary">Problem</h3>
           <div>{problem}</div>
           <br />

@@ -5,7 +5,6 @@ import React from "react";
 function TestOutput(props) {
   let allTests = [];
   for (let i = 0; i < props.testInputs.length; i++) {
-    console.log(i);
     allTests.push({
       userOutputs: props.userOutputs[i],
       testInputs: props.testInputs[i],
@@ -18,7 +17,7 @@ function TestOutput(props) {
   }
 
   return (
-    <div className="p-2 rounded-lg border border-primary font-mono">
+    <div className="p-2 rounded-lg border border-secondary font-mono">
       <div className="text-2xl text-secondary m-2">Test Cases</div>
       <div className="flex flex-col">
         {allTests.map((element, index) => (
