@@ -5,6 +5,25 @@ import ProblemStatement from "@/components/ProblemStatement";
 import TestCases from "@/components/TestCases";
 import TestOutput from "@/components/TestOutput";
 
+import { useEffect, useLayoutEffect, useState } from "react";
+import { WebContainer } from "@webcontainer/api";
+/** @type {import('@webcontainer/api').WebContainer} */
+import { files } from '../../files';
+
+// Setting up WebContainer
+let webcontainerInstance;
+
+async function installDependencies(){
+  const installProcess = await webcontainerInstance.spawn('npm', ['install']);
+
+  installProcess.output.pipeTo(new WritableStream({
+    write(data){
+      console.log(data);
+    }
+  }));
+  return installProcess.exit;
+}
+
 export default function Game() {
   const [testCases, setTestCases] = useState({});
   const [problem, setProblem] = useState("");
@@ -14,6 +33,56 @@ export default function Game() {
   const [userOutputs, setUserOutputs] = useState([]);
   const [testInputs, setTestInputs] = useState([]);
   const [missedQuestions, setMissedQuestions] = useState([]);
+
+  const [frameUrl, setframeUrl] = useState("");
+
+
+  // Setting up WebContainer
+  useEffect(()=> {
+    async function getPackage(){
+      console.log(files['index.js'].file.contents);
+
+      // Makes sure that webcontainer only boots once
+      if (!webcontainerInstance){
+        webcontainerInstance = await WebContainer.boot();
+      }
+      await webcontainerInstance.mount(files);
+
+      const exitCode = await installDependencies();
+      if (exitCode !== 0) {
+        throw new Error('Installation Failed');
+      };
+
+      startDevServer();
+    }
+    getPackage();
+  }, []);
+
+   // Function to write to Express' index.js
+   function writeContent(content){
+
+    /** @param {string} content */
+    async function write(content){
+      await webcontainerInstance.fs.writeFile('/index.js', content);
+      const file = await webcontainerInstance.fs.readFile('/index.js', 'utf-8');
+      //await webcontainerInstance.mount(file);
+      console.log(file);
+    };
+    write(content);
+    console.log(content);
+  }
+
+  async function startDevServer() {
+    // Start Express app
+    await webcontainerInstance.spawn('npm', ['run', 'start']);
+  
+    // Wait for server-ready event
+    webcontainerInstance.on('server-ready', (port, url) => {
+      setframeUrl(url);
+    })
+  }
+
+  var code = "import express from 'express'; const app = express(); const port = 3111; app.get('/', (req, res) => {res.send('solution put will go here!!!!!🥳');}); app.listen(port, () => {console.log(\`App is live at http://localhost:\${port}\`);});"
 
   // TODO may want to enable 'light mode' vs 'dark mode'
 
