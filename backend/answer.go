@@ -18,7 +18,6 @@ type PostAnswerResponse = struct {
 }
 
 func postAnswer(w http.ResponseWriter, r *http.Request) {
-	fmt.Printf("got post request\n")
 	requestBody := make([]byte, 1110)
 	num, err := r.Body.Read(requestBody)
 	requestBody = requestBody[:num]

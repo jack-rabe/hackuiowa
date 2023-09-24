@@ -10,7 +10,6 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -23,44 +22,33 @@ type Player struct {
 
 var playersMap map[string]Player
 
-func connectToMongo() {
+func connectToMongo() (*mongo.Database, *mongo.Client) {
 	mongoUserName, userNameFound := os.LookupEnv("MONGO_USER")
 	mongoPassword, passwordFound := os.LookupEnv("MONGO_PASSWORD")
-	if !userNameFound || !passwordFound {
+	environment := os.Getenv("ENV")
+	if (!userNameFound || !passwordFound) && environment != "LOCAL" {
 		panic("username or password not found")
 	}
 	uri := fmt.Sprintf("mongodb+srv://%s:%s@cluster0.29nf6.mongodb.net/?retryWrites=true&w=majority", mongoUserName, mongoPassword)
-	fmt.Println(uri)
-
+	if environment == "LOCAL" {
+		uri = "mongodb://localhost:27017"
+	}
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
-	// Create a new client and connect to the server
-	client, err := mongo.Connect(context.TODO(), opts)
+	client, err := mongo.Connect(context.Background(), opts)
 	if err != nil {
 		panic(err)
 	}
 
-	// db := client.Database("x")
-	// collection := db.Collection("y")
-	// collection.Find()
-
-	defer func() {
-		if err = client.Disconnect(context.TODO()); err != nil {
-			panic(err)
-		}
-	}()
-	// Send a ping to confirm a successful connection
-	if err := client.Database("admin").RunCommand(context.TODO(), bson.D{{"ping", 1}}).Err(); err != nil {
-		panic(err)
-	}
-	fmt.Println("Pinged your deployment. You successfully connected to MongoDB!")
+	db := client.Database("test")
+	return db, client
 }
 
 func main() {
 	godotenv.Load()
 	playersMap = make(map[string]Player)
 
-	// connectToMongo()
+	connectToMongo()
 
 	router := mux.NewRouter()
 	router.HandleFunc("/answer", postAnswer)
