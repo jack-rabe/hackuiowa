@@ -18,8 +18,6 @@ export default function Game() {
 
   const [leaderboard, setLeaderboard] = useState([]);
 
-  const [theme, setTheme] = useState("dark");
-
   // TODO may want to enable 'light mode' vs 'dark mode'
 
   useEffect(() => {
