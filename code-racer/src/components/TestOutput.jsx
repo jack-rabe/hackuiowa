@@ -12,6 +12,12 @@ function TestOutput(props) {
     });
   }
 
+  if (props.missedQuestions[0] === null) {
+    for (let i = 0; i < allTests.length; i++) {
+      allTests[i].missedQuestions = false;
+    }
+  }
+
   if (allTests.length === 0) {
     return <div>No test cases provided.</div>;
   }

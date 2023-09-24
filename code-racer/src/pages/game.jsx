@@ -18,9 +18,7 @@ async function installDependencies() {
 
   installProcess.output.pipeTo(
     new WritableStream({
-      write(data) {
-        //console.log(data);
-      },
+      write(data) {},
     })
   );
   return installProcess.exit;
@@ -34,7 +32,7 @@ export default function Game() {
 
   const [userOutputs, setUserOutputs] = useState([]);
   const [testInputs, setTestInputs] = useState([]);
-  const [missedQuestions, setMissedQuestions] = useState([]);
+  const [missedQuestions, setMissedQuestions] = useState([null]);
 
   const [competeStartDate, setCompeteStartDate] = useState(
     new Date("2023-09-24T14:30:00Z")
@@ -108,8 +106,8 @@ export default function Game() {
     // Add in the call to user's algo, and print its output to console (WebContainer's console)
     usrCode =
       usrCode + "var output = solution(input);    console.log(output);\n";
-    console.log(usrCode);
-    console.log("Awaiting now");
+    // console.log(usrCode);
+    // console.log("Awaiting now");
     return await runUserCode(usrCode);
   }
   const [leaderboard, setLeaderboard] = useState([]);
@@ -216,7 +214,7 @@ export default function Game() {
       }
     });
     // TODO Event handler for WebSocket errors
-    socket.addEventListener("error", (error) => { });
+    socket.addEventListener("error", (error) => {});
   }, []);
 
   return (
@@ -260,6 +258,10 @@ export default function Game() {
                     realUserOutputs.push(
                       h.split("\n").join("").split("\r").join("")
                     );
+                    const cur_body = {
+                      userId: username,
+                      responses: realUserOutputs,
+                    };
                     setUserOutputs(realUserOutputs);
                     fetch(hostName + "/answer", {
                       method: "POST",
@@ -295,12 +297,11 @@ export default function Game() {
                               alert("Congratulations! You solved the problem!");
                             }
                             setMissedQuestions(x.missedQuestions);
+                            setTestCasesVisible(true);
                           });
                       });
                   });
                 });
-
-                setTestCasesVisible(true);
               });
 
               setTestCasesVisible(true);
@@ -308,7 +309,6 @@ export default function Game() {
           >
             Submit
           </button>
-          <div>{userOutputs}</div>
           <br />
           <br />
           {testCasesVisible && (
