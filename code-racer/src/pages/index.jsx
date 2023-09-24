@@ -14,7 +14,7 @@ async function checkUsername(router, username) {
   }).then((res) => {
     if (res.status != 201) {
       alert(
-        "That username has already been selected, please choose a different one"
+        "That username has already been selected, please choose a different one",
       );
     } else {
       alert(`Welcome, ${username}!`);
@@ -33,16 +33,18 @@ export default function Welcome() {
 
   return (
     <>
-      <h1 className="font-mono text-center text-3xl m-3">
+      <h1 className="font-mono text-center font-bold text-primary text-4xl m-3">
         Welcome to Code Race
       </h1>
       <br />
-      <div className="font-mono flex items-center justify-center">Username</div>
+      <div className="font-mono flex items-center justify-center text-xl text-secondary">
+        Username
+      </div>
       <div className="flex items-center justify-center">
         <input
           id="username"
           type="text"
-          className="w-72 h-12 border-2 border-gray-400 rounded-lg pl-4 text-lg focus:outline-none m-1"
+          className="w-72 h-12 border-2 border-primary rounded-lg pl-4 text-lg focus:outline-none m-1"
           value={username}
           onChange={(e) => {
             setUsername(e.target.value);
