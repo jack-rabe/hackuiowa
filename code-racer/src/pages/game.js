@@ -62,21 +62,25 @@ export default function Game() {
 
   return (
     <>
-      <h1 className="text-center font-mono text-3xl m-2">Code Race</h1>
+      <h1 className="text-center text-primary font-mono text-4xl font-bold m-2">
+        Code Race
+      </h1>
       <div class="text-right">{username}</div>
       <br />
       <div className="grid grid-cols-2 gap-4">
-        <div className="font-mono col-span-1 border border-white m-2 p-3 rounded-lg">
-          <h3 className="text-2xl pb-1">Problem</h3>
+        <div className="font-mono col-span-1 border border-primary m-2 p-3 rounded-lg">
+          <h3 className="text-2xl pb-1 text-secondary">Problem</h3>
           <ProblemStatement problem={problem} />
           <br />
-          <h3 className="text-2xl pb-1">Sample Test Cases</h3>
+          <h3 className="text-2xl pb-1 text-secondary">Sample Test Cases</h3>
           <TestCases cases={testCases} />
           <br />
           <br />
         </div>
         <div className="col-span-1">
-          <h3 className="text-2xl font-mono mb-1">JavaScript Code</h3>
+          <h3 className="text-2xl font-mono mb-1 text-secondary">
+            JavaScript Code
+          </h3>
           <Solution userCode={userCode} setUserCode={setUserCode} />
           <br />
           <button
@@ -87,7 +91,7 @@ export default function Game() {
               // TODO don't hard-code the body we send to the BE. need to track the user's userId
               const cur_body = {
                 userId: "dconway",
-                responses: ["1", "2", "3"],
+                responses: ["2", "2", "3"],
               };
 
               fetch("http://localhost:3333/answer", {

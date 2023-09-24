@@ -17,8 +17,8 @@ function TestOutput(props) {
     return <div>No test cases provided.</div>;
   }
   return (
-    <div className="p-2 rounded-lg border border-white font-mono">
-      <div className="text-2xl">Test Cases</div>
+    <div className="p-2 rounded-lg border border-primary font-mono">
+      <div className="text-2xl text-secondary m-2">Test Cases</div>
       <div className="flex flex-col">
         {allTests.map((element, index) => (
           <div className="border-white border m-1 p-1 rounded-lg" key={index}>
