@@ -30,9 +30,11 @@ export default function Welcome() {
   const router = useRouter();
   return (
     <>
-      <h1 className="text-center text-3xl m-3">Welcome to Code Race</h1>
+      <h1 className="font-mono text-center text-3xl m-3">
+        Welcome to Code Race
+      </h1>
       <br />
-      <div className="flex items-center justify-center">Username</div>
+      <div className="font-mono flex items-center justify-center">Username</div>
       <div className="flex items-center justify-center">
         <input
           id="username"
@@ -54,7 +56,7 @@ export default function Welcome() {
       <br />
       <div className="flex items-center justify-center">
         <button
-          className="btn btn-primary"
+          className="font-mono btn btn-primary"
           onClick={() => checkUsername(router, username)}
         >
           Submit

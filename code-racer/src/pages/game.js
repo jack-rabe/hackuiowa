@@ -32,8 +32,13 @@ export default function Game() {
       })
       .then((x) => {
         setProblem(x.question);
+        let parsedInput = JSON.parse(x.sampleInput);
+        if (Array.isArray(parsedInput)) {
+          console.log(typeof parsedInput[1]);
+          parsedInput = `[${parsedInput.join(", ")}]`;
+        }
         setTestCases({
-          input: x.sampleInput,
+          input: parsedInput,
           solution: x.solution,
           explanation: x.explanation,
         });
@@ -82,26 +87,24 @@ export default function Game() {
 
   return (
     <>
-      <h1 className="text-center text-3xl">Code Race</h1>
+      <h1 className="text-center font-mono text-3xl m-2">Code Race</h1>
       <br />
       <div className="grid grid-cols-2 gap-4">
-        <div className="col-span-1">
-          <h3 className="text-2xl">Problem</h3>
+        <div className="font-mono col-span-1 border border-white m-2 p-3 rounded-lg">
+          <h3 className="text-2xl pb-1">Problem</h3>
           <ProblemStatement problem={problem} />
           <br />
-          <h3 className="text-2xl">Sample Test Cases</h3>
-          <br />
+          <h3 className="text-2xl pb-1">Sample Test Cases</h3>
           <TestCases cases={testCases} />
           <br />
           <br />
-          <Leaderboard leaderboard={leaderboard} />
         </div>
         <div className="col-span-1">
-          <h3 className="text-2xl">JavaScript Code</h3>
+          <h3 className="text-2xl font-mono mb-1">JavaScript Code</h3>
           <Solution userCode={userCode} setUserCode={setUserCode} />
           <br />
           <button
-            className="btn btn-primary"
+            className="btn btn-primary font-mono"
             onClick={() => setTestCasesVisible(true)}
           >
             Submit
@@ -117,6 +120,7 @@ export default function Game() {
           )}
         </div>
       </div>
+      <Leaderboard leaderboard={leaderboard} />
     </>
   );
 }
