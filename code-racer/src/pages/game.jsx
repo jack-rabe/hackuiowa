@@ -306,24 +306,24 @@ export default function Game() {
                   realUserOutputs.push(f.split('\n').join('').split('\r').join(''))
                   testUserCode(userCode, testInputs[2]).then((h) => {
                     realUserOutputs.push(h.split('\n').join('').split('\r').join(''))
-                  console.log("User outputs")
-                  console.log(realUserOutputs)
-                  const cur_body = {
-                    userId: username,
-                    responses: realUserOutputs,
-                  };
-                  fetch(hostName + "/answer", {
-                    method: "POST",
-                    body: JSON.stringify(cur_body),
-                  })
-                    .then((res) => {
-                      if (res.status != 200) {
-                        console.log("Backend is currently down");
-                        return;
-                      } else {
-                        return res.json();
-                      }
+                    console.log("User outputs")
+                    console.log(realUserOutputs)
+                    const cur_body = {
+                      userId: username,
+                      responses: realUserOutputs,
+                    };
+                    fetch(hostName + "/answer", {
+                      method: "POST",
+                      body: JSON.stringify(cur_body),
                     })
+                      .then((res) => {
+                        if (res.status != 200) {
+                          console.log("Backend is currently down");
+                          return;
+                        } else {
+                          return res.json();
+                        }
+                      })
                       .then((res) => {
                         if (res.status != 200) {
                           console.log("Backend is currently down");
@@ -339,7 +339,7 @@ export default function Game() {
                         };
                         console.log("cur body");
                         console.log(cur_body);
-                        fetch("http://localhost:3333/answer", {
+                        fetch("https://racer-server.tech/answer", {
                           method: "POST",
                           body: JSON.stringify(cur_body),
                         })
