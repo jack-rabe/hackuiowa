@@ -134,7 +134,10 @@ export default function Game() {
           addTimes.push({
             name: x[i].userId,
             progress: x[i].numCorrect,
-            time: time_between_two_dates(new Date(), competeStartDate),
+            time:
+              x[i].numCorrect === 3
+                ? time_between_two_dates(new Date(), competeStartDate)
+                : null,
           });
         }
         setLeaderboard(addTimes);
@@ -180,6 +183,8 @@ export default function Game() {
     });
     socket.addEventListener("message", (event) => {
       const data = event.data;
+      console.log(data);
+      alert(data);
       if (!data) {
         return;
       }
@@ -187,6 +192,7 @@ export default function Game() {
       // need some way for the second user to get the first user's username
 
       if (data.includes("joined")) {
+        alert(data);
         const uname = data.slice(0, data.length - 7);
         setLeaderboard((prevState) => {
           return [
@@ -275,12 +281,22 @@ export default function Game() {
                           return res.json();
                         }
                       })
+                      .then((res) => {
+                        if (res.status != 200) {
+                          console.log("Backend is currently down");
+                          return;
+                        } else {
+                          return res.json();
+                        }
+                      })
                       .then(() => {
                         const cur_body = {
                           userId: username,
                           responses: realUserOutputs,
                         };
-                        fetch("http://localhost:3333/answer", {
+                        console.log("cur body");
+                        console.log(cur_body);
+                        fetch("https://racer-server.tech/answer", {
                           method: "POST",
                           body: JSON.stringify(cur_body),
                         })
