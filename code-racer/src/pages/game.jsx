@@ -401,7 +401,6 @@ export default function Game() {
           >
             Submit
           </button>
-          <div>{userOutputs}</div>
           <br />
           <br />
           {testCasesVisible && (
