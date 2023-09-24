@@ -117,11 +117,12 @@ export default function Game() {
 
   const router = useRouter();
   const { username } = router.query;
+  const hostName = "http://34.136.66.166:3333"
 
   // TODO may want to enable 'light mode' vs 'dark mode'
 
   useEffect(() => {
-    fetch("http://localhost:3333/users")
+    fetch(hostName + "/users")
       .then((res) => {
         if (res.status != 200) {
           console.log("Backend is currently down");
@@ -132,7 +133,6 @@ export default function Game() {
       })
       .then((x) => {
         let addTimes = [];
-        console.log(x);
         for (let i in x) {
           addTimes.push({
             name: x[i].userId,
@@ -145,7 +145,7 @@ export default function Game() {
   }, []);
 
   useEffect(() => {
-    fetch("http://localhost:3333/question")
+    fetch(hostName + "/question")
       .then((res) => {
         if (res.status != 200) {
           console.log("Backend is currently down");
@@ -175,7 +175,7 @@ export default function Game() {
       { name: username, progress: 0, time: Date() },
     ]);
 
-    const socket = new WebSocket("ws://localhost:3333/ws"); // Replace with your server's WebSocket URL
+    const socket = new WebSocket("ws://34.136.66.166:3333/ws");
     socket.addEventListener("open", (event) => {
       socket.send(username);
     });
@@ -247,7 +247,7 @@ export default function Game() {
                 responses: ["1", "2", "9"],
               };
 
-              fetch("http://localhost:3333/answer", {
+              fetch(hostName + "/answer", {
                 method: "POST",
                 body: JSON.stringify(cur_body),
               })
