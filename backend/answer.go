@@ -6,7 +6,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"strconv"
 
+	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -54,8 +56,8 @@ func postAnswer(w http.ResponseWriter, r *http.Request) {
 			missedQuestions = append(missedQuestions, idx)
 		}
 	}
-	numCorrect := len(missedQuestions)
-	answerReponse := PostAnswerResponse{HasWon: numCorrect == 0, MissedQuestions: missedQuestions}
+	numCorrect := len(answerResult.Expected) - len(missedQuestions)
+	answerReponse := PostAnswerResponse{HasWon: len(missedQuestions) == 0, MissedQuestions: missedQuestions}
 	responseBody, err := json.Marshal(answerReponse)
 	if err != nil {
 		panic(err)
@@ -68,10 +70,18 @@ func postAnswer(w http.ResponseWriter, r *http.Request) {
 	}()
 
 	p := playersMap[req.UserID]
+	fmt.Println(numCorrect, p.NumCorrect)
 	if numCorrect > p.NumCorrect {
-		// for _, otherPlayer := range playersMap {
-
-		// }
+		fmt.Println("improvement", playersMap)
+		for _, otherPlayer := range playersMap {
+			if otherPlayer.Conn == nil {
+				continue
+			}
+			s := strconv.Itoa(numCorrect)
+			if err = otherPlayer.Conn.WriteMessage(websocket.TextMessage, []byte(req.UserID+" improved "+s)); err != nil {
+				panic(err)
+			}
+		}
 	}
 
 	io.WriteString(w, string(responseBody))

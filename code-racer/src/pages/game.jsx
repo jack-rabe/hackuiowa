@@ -70,7 +70,7 @@ export default function Game() {
         alert("hi " + data.slice(0, data.length - 7))
       }
       else if (data.includes("improved")) {
-        alert("hi " + data.slice(0, data.length - 7))
+        alert(data)
       }
     });
     // TODO Event handler for WebSocket errors
