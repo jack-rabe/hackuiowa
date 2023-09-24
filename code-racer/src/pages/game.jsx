@@ -297,6 +297,7 @@ export default function Game() {
                       userId: username,
                       responses: realUserOutputs,
                     };
+                    setUserOutputs(realUserOutputs)
                     fetch(hostName + "/answer", {
                       method: "POST",
                       body: JSON.stringify(cur_body),
