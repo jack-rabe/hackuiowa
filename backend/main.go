@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/websocket"
@@ -44,11 +45,15 @@ func connectToMongo() (*mongo.Database, *mongo.Client) {
 	return db, client
 }
 
+func getQuestionNumberForDay() int {
+	questionMap := map[int]int{24: 7, 25: 1, 26: 0, 27: 2, 28: 3, 29: 4, 30: 5, 1: 6}
+	day := time.Now().Day()
+	return questionMap[day]
+}
+
 func main() {
 	godotenv.Load()
 	playersMap = make(map[string]Player)
-
-	connectToMongo()
 
 	router := mux.NewRouter()
 	router.HandleFunc("/answer", postAnswer)
