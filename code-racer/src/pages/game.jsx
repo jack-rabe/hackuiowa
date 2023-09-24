@@ -18,7 +18,7 @@ async function installDependencies() {
 
   installProcess.output.pipeTo(
     new WritableStream({
-      write(data) {},
+      write(data) { },
     })
   );
   return installProcess.exit;
@@ -183,8 +183,6 @@ export default function Game() {
     });
     socket.addEventListener("message", (event) => {
       const data = event.data;
-      console.log(data);
-      alert(data);
       if (!data) {
         return;
       }
@@ -192,7 +190,6 @@ export default function Game() {
       // need some way for the second user to get the first user's username
 
       if (data.includes("joined")) {
-        alert(data);
         const uname = data.slice(0, data.length - 7);
         setLeaderboard((prevState) => {
           return [
@@ -219,7 +216,7 @@ export default function Game() {
       }
     });
     // TODO Event handler for WebSocket errors
-    socket.addEventListener("error", (error) => {});
+    socket.addEventListener("error", (error) => { });
   }, []);
 
   return (
