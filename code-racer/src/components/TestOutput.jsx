@@ -17,24 +17,21 @@ function TestOutput(props) {
     return <div>No test cases provided.</div>;
   }
   return (
-    <>
+    <div className="p-2 rounded-lg border border-white font-mono">
       <div className="text-2xl">Test Cases</div>
-      {console.log(allTests)}
-      {allTests.map((element, index) => (
-        <div key={index}>
-          Case: {element.testInputs}
-          <br />
-          User Output: {element.userOutputs}
-          <br />
-          {element.missedQuestions.toString() === "false"
-            ? <div className="text-error font-bold">Incorrect</div>
-            : <div className="text-success font-bold">Correct</div>}
-          < br />
-          <br />
-        </div >
-      ))
-      }
-    </>
+      <div className="flex flex-col">
+        {allTests.map((element, index) => (
+          <div className="border-white border m-1 p-1 rounded-lg" key={index}>
+            <div>Case: {element.testInputs}</div>
+            <div>User Output: {element.userOutputs}</div>
+            {element.missedQuestions.toString() === "false"
+              ? <div className="text-error font-bold">Incorrect</div>
+              : <div className="text-success font-bold">Correct</div>}
+          </div >
+        ))
+        }
+      </div>
+    </div>
   );
 }
 
