@@ -21,7 +21,6 @@ export default function Game() {
   const router = useRouter();
   const { username } = router.query;
 
-  console.log(username);
   // TODO may want to enable 'light mode' vs 'dark mode'
 
   useEffect(() => {
@@ -38,7 +37,6 @@ export default function Game() {
         setProblem(x.question);
         let parsedInput = JSON.parse(x.sampleInput);
         if (Array.isArray(parsedInput)) {
-          console.log(typeof parsedInput[1]);
           parsedInput = `[${parsedInput.join(", ")}]`;
         }
         setTestCases({
@@ -57,6 +55,16 @@ export default function Game() {
       { name: "Fred", progress: 1, time: Date() },
       { name: "Jimmy", progress: 0, time: Date() },
     ]);
+
+    const socket = new WebSocket("ws://localhost:3333/ws"); // Replace with your server's WebSocket URL
+    socket.addEventListener("open", (event) => {
+      socket.send(username);
+    });
+    socket.addEventListener("message", (event) => {
+      console.log(event.data);
+    });
+    // TODO Event handler for WebSocket errors
+    socket.addEventListener("error", (error) => {});
   }, []);
 
   return (
