@@ -71,6 +71,8 @@ export default function Game() {
     write(content);
   }
 
+  const stripAnsiCodes = str => str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
+
   async function runUserCode(usrCode){
     console.log("Running user's solution");
 
@@ -78,13 +80,24 @@ export default function Game() {
     writeContent(usrCode);
 
     const runningSolution = await webcontainerInstance.spawn('node', ['userSolution.js']);
-
+    //setUserOutput(runningSolution.output);
+    //var out = runningSolution.output;
+    //console.log(out.text());
+    /*
+    const reader = await runningSolution.output.getReader();
+    const { done, value } = await reader.read();
+    console.log(value);
+    setUserOutput(stripAnsiCodes(value));
+    */
+    
+    
     runningSolution.output.pipeTo(new WritableStream({
       write(data){
-        setUserOutput(data);
+        setUserOutput(stripAnsiCodes(data));
         console.log(data);
       }
     }));
+    
   }
 
   function testUserCode(userCode){
