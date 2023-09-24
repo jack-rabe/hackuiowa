@@ -5,7 +5,6 @@ import ProblemStatement from "@/components/ProblemStatement";
 import TestCases from "@/components/TestCases";
 import TestOutput from "@/components/TestOutput";
 
-import { useEffect, useLayoutEffect, useState } from "react";
 import { WebContainer } from "@webcontainer/api";
 /** @type {import('@webcontainer/api').WebContainer} */
 import { files } from '../../files';
@@ -18,7 +17,7 @@ async function installDependencies(){
 
   installProcess.output.pipeTo(new WritableStream({
     write(data){
-      console.log(data);
+      //console.log(data);
     }
   }));
   return installProcess.exit;
@@ -35,12 +34,13 @@ export default function Game() {
   const [missedQuestions, setMissedQuestions] = useState([]);
 
   const [frameUrl, setframeUrl] = useState("");
+  const [iframeCounter, setIFrameCounter] = useState(0);
 
 
   // Setting up WebContainer
   useEffect(()=> {
     async function getPackage(){
-      console.log(files['index.js'].file.contents);
+      //console.log(files['index.js'].file.contents);
 
       // Makes sure that webcontainer only boots once
       if (!webcontainerInstance){
@@ -55,6 +55,7 @@ export default function Game() {
 
       startDevServer();
     }
+    console.log("Setting up webcontainer");
     getPackage();
   }, []);
 
@@ -69,20 +70,72 @@ export default function Game() {
       console.log(file);
     };
     write(content);
-    console.log(content);
   }
 
   async function startDevServer() {
+    console.log("Starting dev server");
     // Start Express app
     await webcontainerInstance.spawn('npm', ['run', 'start']);
   
     // Wait for server-ready event
     webcontainerInstance.on('server-ready', (port, url) => {
       setframeUrl(url);
+      console.log("Here's the URL");
+      console.log(frameUrl);
     })
+    console.log("Dev server ready");
   }
 
   var code = "import express from 'express'; const app = express(); const port = 3111; app.get('/', (req, res) => {res.send('solution put will go here!!!!!🥳');}); app.listen(port, () => {console.log(\`App is live at http://localhost:\${port}\`);});"
+
+  function testUserCode(userCode){
+    var usrCode = userCode;
+    usrCode = "import express from 'express';\n    const app = express();\n    const port = 3111;\n    var input2 = [2,5,3,1,8,9,7,6];    var input1 = [2,1,4];\n" + usrCode;
+    usrCode = usrCode + "var output = solution(input1);\n    app.get('/', (req, res) => {res.send([output]);});\n    app.listen(port, () => {});";
+    console.log(usrCode);
+    writeContent(usrCode);
+    setIFrameCounter(iframeCounter + 1);
+    
+    console.log(iframeCounter);
+    console.log("Frame url is below: ");
+    console.log(frameUrl);
+    
+    /*
+    fetch(frameUrl)
+    .then((res) => {
+      if (res.status != 200) {
+        console.log("Express is currently down");
+        return;
+      }
+      return res.json();
+    })
+    .then((x) => {
+      console.log("fetched from express");
+      console.log(frameUrl + "bla");
+      console.log(x);
+    });
+    */
+    
+  }
+
+  /*
+  useEffect(()=> {
+    fetch(frameUrl)
+    .then((res) => {
+      if (res.status != 200) {
+        console.log("Express is currently down");
+        return;
+      } else {
+        return res.json();
+      }
+    })
+    .then((x) => {
+      console.log("fetched from express");
+      console.log(x);
+    });
+  }, [])
+*/
+
 
   // TODO may want to enable 'light mode' vs 'dark mode'
 
@@ -137,6 +190,7 @@ export default function Game() {
       });
   }, []);
 
+
   return (
     <>
       <h1 className="text-center text-3xl">Code Race</h1>
@@ -156,10 +210,17 @@ export default function Game() {
           <br />
           <button
             className="btn btn-primary"
-            onClick={() => setTestCasesVisible(true)}
+            onClick={() => {
+              setTestCasesVisible(true);
+              testUserCode(userCode);
+            }}
           >
             Submit
           </button>
+          <iframe
+            key = {iframeCounter}
+            src = {frameUrl}          
+          />
           <br />
           <br />
           {testCasesVisible && (
