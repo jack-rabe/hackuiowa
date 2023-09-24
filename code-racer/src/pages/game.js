@@ -4,6 +4,7 @@ import Solution from "@/components/Solution";
 import ProblemStatement from "@/components/ProblemStatement";
 import TestCases from "@/components/TestCases";
 import TestOutput from "@/components/TestOutput";
+import Leaderboard from "@/components/Leaderboard";
 
 export default function Game() {
   const [testCases, setTestCases] = useState({});
@@ -14,6 +15,8 @@ export default function Game() {
   const [userOutputs, setUserOutputs] = useState([]);
   const [testInputs, setTestInputs] = useState([]);
   const [missedQuestions, setMissedQuestions] = useState([]);
+
+  const [leaderboard, setLeaderboard] = useState([]);
 
   // TODO may want to enable 'light mode' vs 'dark mode'
 
@@ -38,11 +41,20 @@ export default function Game() {
         setTestInputs(x.inputs);
       });
 
-    // TODO don't hard-code the body we send to the BE
+    // TODO don't hard-code the body we send to the BE. need to track the user's userId
     const cur_body = {
       userId: "dconway",
       responses: ["2", "3"],
     };
+
+    // TODO don't hard code this
+    const date2 = new Date("1995-12-17T03:24:00");
+    setLeaderboard([
+      { name: "Joe", progress: 3, time: Date() },
+      { name: "Bob", progress: 3, time: Date() },
+      { name: "Fred", progress: 1, time: Date() },
+      { name: "Jimmy", progress: 0, time: Date() },
+    ]);
 
     // TODO replace this with the actual code results the user has
     setUserOutputs(["1", "2"]);
@@ -80,6 +92,9 @@ export default function Game() {
           <h3 className="text-2xl">Sample Test Cases</h3>
           <br />
           <TestCases cases={testCases} />
+          <br />
+          <br />
+          <Leaderboard leaderboard={leaderboard} />
         </div>
         <div className="col-span-1">
           <h3 className="text-2xl">JavaScript Code</h3>
