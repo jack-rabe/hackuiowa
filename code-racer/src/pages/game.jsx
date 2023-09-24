@@ -24,6 +24,30 @@ export default function Game() {
   // TODO may want to enable 'light mode' vs 'dark mode'
 
   useEffect(() => {
+    fetch("http://localhost:3333/users")
+      .then((res) => {
+        if (res.status != 200) {
+          console.log("Backend is currently down");
+          return;
+        } else {
+          return res.json();
+        }
+      })
+      .then((x) => {
+        let addTimes = [];
+        console.log(x);
+        for (let i in x) {
+          addTimes.push({
+            name: x[i].userId,
+            progress: x[i].numCorrect,
+            time: Date(),
+          });
+        }
+        setLeaderboard(addTimes);
+      });
+  }, []);
+
+  useEffect(() => {
     fetch("http://localhost:3333/question")
       .then((res) => {
         if (res.status != 200) {
@@ -51,9 +75,7 @@ export default function Game() {
     // TODO don't hard code this
     setLeaderboard([
       { name: "Joe", progress: 3, time: Date() },
-      { name: "Bob", progress: 3, time: Date() },
-      { name: "Fred", progress: 1, time: Date() },
-      // { name: "Jimmy", progress: 0, time: Date() },
+      { name: username, progress: 0, time: Date() },
     ]);
 
     const socket = new WebSocket("ws://localhost:3333/ws"); // Replace with your server's WebSocket URL
@@ -74,7 +96,19 @@ export default function Game() {
           return [...prevState, { name: uname, progress: 0, time: Date() }];
         });
       } else if (data.includes("improved")) {
-        alert(data);
+        setLeaderboard((prevState) => {
+          let deepCopy = JSON.parse(JSON.stringify(prevState));
+          let name = data.slice(0, data.length - 11);
+          let newScore = data.slice(data.length - 1, data.length);
+
+          for (let i in deepCopy) {
+            if (deepCopy[i].name == name) {
+              deepCopy[i].progress = newScore;
+              break;
+            }
+          }
+          return deepCopy;
+        });
       }
     });
     // TODO Event handler for WebSocket errors
@@ -89,19 +123,20 @@ export default function Game() {
       <div className="text-center italic text-2xl text-info">{username}</div>
       <br />
       <div className="grid grid-cols-2 gap-4">
-        <div className="font-mono col-span-1 border border-secondary m-2 p-3 rounded-lg">
-          <h3 className="text-2xl pb-1 text-secondary">Problem</h3>
-          <div>{problem}</div>
-          <br />
-          <h3 className="text-2xl pb-1 text-secondary">Sample Test Cases</h3>
-          <TestCases cases={testCases} />
-          <br />
-          <br />
+        <div className="font-mono col-span-1">
+          <div className="border border-secondary m-2 p-3 rounded-lg">
+            <h3 className="text-2xl pb-1 text-secondary">Problem</h3>
+            <div>{problem}</div>
+            <br />
+            <h3 className="text-2xl pb-1 text-secondary">Sample Test Cases</h3>
+            <TestCases cases={testCases} />
+            <br />
+            <br />
+          </div>
+          <Leaderboard leaderboard={leaderboard} />
         </div>
         <div className="col-span-1">
-          <h3 className="text-2xl font-mono mb-1 text-secondary">
-            JavaScript Code
-          </h3>
+          <h3 className="text-2xl font-mono text-secondary">JavaScript Code</h3>
           <Solution userCode={userCode} setUserCode={setUserCode} />
           <br />
           <button
@@ -111,8 +146,8 @@ export default function Game() {
               setUserOutputs(["1", "2", "3"]);
               // TODO don't hard-code the body we send to the BE. need to track the user's userId
               const cur_body = {
-                userId: "dconway",
-                responses: ["1", "2", "3"],
+                userId: username,
+                responses: ["2", "2", "3"],
               };
 
               fetch("http://localhost:3333/answer", {
@@ -149,7 +184,6 @@ export default function Game() {
           )}
         </div>
       </div>
-      <Leaderboard leaderboard={leaderboard} />
     </>
   );
 }
