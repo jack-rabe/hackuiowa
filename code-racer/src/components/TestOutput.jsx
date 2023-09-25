@@ -6,10 +6,9 @@ function TestOutput(props) {
     allTests.push({
       userOutputs: props.userOutputs[i],
       testInputs: props.testInputs[i],
-      missedQuestion: props.missedQuestions.includes(i),
+      correct: props.missedQuestions.length > 0 && !props.missedQuestions.includes(i),
     });
   }
-  console.log(allTests)
 
   if (allTests.length === 0) {
     return <div>No test cases provided.</div>;
@@ -23,10 +22,10 @@ function TestOutput(props) {
           <div className="border-white border m-1 p-1 rounded-lg" key={index}>
             <div>Case: {element.testInputs}</div>
             <div>User Output: {element.userOutputs}</div>
-            {element.missedQuestion ? (
-              <div className="text-error font-bold">Incorrect</div>
-            ) : (
+            {element.correct ? (
               <div className="text-success font-bold">Correct</div>
+            ) : (
+              <div className="text-error font-bold">Incorrect</div>
             )}
           </div>
         ))}
