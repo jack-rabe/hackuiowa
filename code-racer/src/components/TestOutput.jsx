@@ -6,9 +6,10 @@ function TestOutput(props) {
     allTests.push({
       userOutputs: props.userOutputs[i],
       testInputs: props.testInputs[i],
-      missedQuestion: i in props.missedQuestions,
+      missedQuestion: props.missedQuestions.includes(i),
     });
   }
+  console.log(allTests)
 
   if (allTests.length === 0) {
     return <div>No test cases provided.</div>;
