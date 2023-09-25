@@ -1,21 +1,13 @@
 import React from "react";
 
-// TODO make sure to remove all TODO statements
-
 function TestOutput(props) {
   let allTests = [];
   for (let i = 0; i < props.testInputs.length; i++) {
     allTests.push({
       userOutputs: props.userOutputs[i],
       testInputs: props.testInputs[i],
-      missedQuestions: !(i in props.missedQuestions),
+      missedQuestion: i in props.missedQuestions,
     });
-  }
-
-  if (props.missedQuestions[0] === null) {
-    for (let i = 0; i < allTests.length; i++) {
-      allTests[i].missedQuestions = false;
-    }
   }
 
   if (allTests.length === 0) {
@@ -30,10 +22,10 @@ function TestOutput(props) {
           <div className="border-white border m-1 p-1 rounded-lg" key={index}>
             <div>Case: {element.testInputs}</div>
             <div>User Output: {element.userOutputs}</div>
-            {element.missedQuestions.toString() !== "false" ? (
-              <div className="text-success font-bold">Correct</div>
-            ) : (
+            {element.missedQuestion ? (
               <div className="text-error font-bold">Incorrect</div>
+            ) : (
+              <div className="text-success font-bold">Correct</div>
             )}
           </div>
         ))}
